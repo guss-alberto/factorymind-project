@@ -25,7 +25,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = ">=5.2" },
-    { name = "django-cors-headers", specifier = ">=4.7.0" },
+    { name = "django-cors-headers", specifier = ">=4.4.0" },
     { name = "django-filter", specifier = ">=25.1" },
     { name = "django-rest-framework", specifier = ">=0.1.0" },
 ]

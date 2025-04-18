@@ -1,0 +1,20 @@
+from django.contrib import admin
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+                    CityViewSet,
+                    ContactViewSet,
+                    CountryViewSet,
+                    RegionViewSet,
+                    SedeViewSet,
+)
+
+router = DefaultRouter()
+router.register(r"countries", CountryViewSet)
+router.register(r"regions", RegionViewSet)
+router.register(r"cities", CityViewSet)
+router.register(r"sedi", SedeViewSet)
+router.register(r"contacts", ContactViewSet)
+
+urlpatterns = router.urls

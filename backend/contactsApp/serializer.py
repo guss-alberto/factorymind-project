@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import City, Contact, Country, Region, Sede
 
+
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["iso_code", "name"]
@@ -10,19 +11,19 @@ class CountrySerializer(serializers.ModelSerializer):
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["code", "name"]
+        fields = ["id", "code", "name", "country"]
         model = Region
 
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["name"]
+        fields = ["id", "name", "region"]
         model = City
 
 
 class SedeSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["code", "name"]
+        fields = ["id", "code", "name"]
         model = Sede
 
 
@@ -33,7 +34,8 @@ class ContactListSerializer(serializers.ModelSerializer):
     city = serializers.StringRelatedField()
     
     class Meta:
-        read_only_fields = [
+        fields = [
+            "id", 
             "sede",
             "name",
             "country",
@@ -46,9 +48,14 @@ class ContactListSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+
+    country = serializers.PrimaryKeyRelatedField(read_only=True)
+    region = serializers.PrimaryKeyRelatedField(read_only=True)
+    city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
     
     class Meta:
         fields = [
+            "id", 
             "sede",
             "name",
             "address",

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+
 
 class Country(models.Model):
     """
@@ -32,7 +32,7 @@ class Region(models.Model):
     )
 
     class Meta:
-        ordering = ['country', 'name'] # Ordina per nazione e poi per nome
+        ordering = ['name'] # Ordina per nome
 
     def __str__(self):
         return f"{self.name} ({self.country.iso_code})"
@@ -57,7 +57,7 @@ class City(models.Model):
         ordering = ['region', 'name'] # Ordina per regione e poi per nome
 
     def __str__(self):
-        return f"{self.name} ({self.region.name})"
+        return f"{self.name} ({self.region.code})"
 
 # Modelli Anagrafica/Contatti
 # ===========================
@@ -81,7 +81,7 @@ class Sede(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self.name} ({self.code})"
+        return f"{self.name}"
 
 
 class Contact(models.Model):
