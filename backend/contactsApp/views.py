@@ -1,11 +1,15 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, viewsets
+import django_filters
+from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
-
 from .models import City, Contact, Country, Region, Sede
-from .serializer import (CitySerializer, ContactListSerializer,
-                         ContactSerializer, CountrySerializer,
-                         RegionSerializer, SedeSerializer)
+from .serializer import (
+    CitySerializer,
+    ContactListSerializer,
+    ContactSerializer,
+    CountrySerializer,
+    RegionSerializer,
+    SedeSerializer,
+)
 
 
 class StandardPagination(LimitOffsetPagination):
@@ -35,6 +39,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     filterset_fields = ["iso_code", "name"]
     ordering_fields = ["code", "name"]
 
+
 class SedeViewSet(viewsets.ModelViewSet):
     queryset = Sede.objects.all()
     serializer_class = SedeSerializer
@@ -42,9 +47,27 @@ class SedeViewSet(viewsets.ModelViewSet):
     ordering_fields = ["code", "name"]
 
 
+class ContactsFilter(django_filters.FilterSet):
+    sede__icontains = django_filters.CharFilter(field_name="sede__name", lookup_expr="icontains")
+    country__icontains = django_filters.CharFilter(field_name="country__name", lookup_expr="icontains")
+    city__icontains = django_filters.CharFilter(field_name="city__name", lookup_expr="icontains")
+
+    class Meta:
+        model = Contact
+        fields = {
+            "id": ["exact", "lt", "gt", "lte", "gte", "range"],
+            "name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "phone": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+        }
+
+
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
-    
+
+    filterset_class = ContactsFilter
+    pagination_class = StandardPagination
+
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
             return ContactSerializer
