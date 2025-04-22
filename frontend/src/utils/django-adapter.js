@@ -24,7 +24,12 @@ function djangoStore(url) {
   return new CustomStore({
     key: 'id',
     async load(loadOptions) {
+      //console.log(loadOptions)
       let options = `?limit=${loadOptions.take}&offset=${loadOptions.skip}`
+
+      if (loadOptions.searchValue){
+        options += "&_search=" + loadOptions.searchValue
+      }
 
       if (loadOptions.sort) {
         let sort = loadOptions.sort.map((o) => { return `${o.desc ? "" : "-"}${o.selector}` })
@@ -56,6 +61,12 @@ function djangoStore(url) {
         data: result.results || result,
         totalCount: result.count || result.length,
       };
+    },
+    async keyOf (elem) {
+      return elem.id
+    },
+    async byKey (key) {
+      return await endpoint.get(`/${key}/`)
     },
     async insert(values) {
       await endpoint.post("/", values);

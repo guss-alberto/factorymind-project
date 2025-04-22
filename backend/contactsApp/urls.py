@@ -8,6 +8,7 @@ from .views import (
                     CountryViewSet,
                     RegionViewSet,
                     SedeViewSet,
+                    RegisterViewSet,
 )
 
 router = DefaultRouter()
@@ -16,5 +17,6 @@ router.register(r"regions", RegionViewSet)
 router.register(r"cities", CityViewSet)
 router.register(r"sedi", SedeViewSet)
 router.register(r"contacts", ContactViewSet)
+router.register(r"register", RegisterViewSet)
 
 urlpatterns = router.urls

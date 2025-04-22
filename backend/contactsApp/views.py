@@ -1,7 +1,8 @@
 import django_filters
 from rest_framework import viewsets
+from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
-from .models import City, Contact, Country, Region, Sede
+from .models import City, Contact, Country, Region, Sede, Register
 from .serializer import (
     CitySerializer,
     ContactListSerializer,
@@ -9,6 +10,7 @@ from .serializer import (
     CountrySerializer,
     RegionSerializer,
     SedeSerializer,
+    RegisterSerializer,
 )
 
 
@@ -17,10 +19,22 @@ class StandardPagination(LimitOffsetPagination):
     max_page_size = 100
 
 
+class RegionFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method='filter_search')
+
+    class Meta:
+        model = Region
+        fields = ["country"]
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) | Q(code__icontains=value)
+        )
+
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
-    filterset_fields = ["code", "name", "country"]
+    filterset_class = RegionFilter
     search_fields = ["name"]
     ordering_fields = ["code", "name"]
     pagination_class = StandardPagination
@@ -33,10 +47,23 @@ class CityViewSet(viewsets.ModelViewSet):
     search_fields = ["name"]
 
 
+
+class CountryFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method='filter_search')
+
+    class Meta:
+        model = Country
+        fields = ["iso_code"]
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) | Q(iso_code__icontains=value)
+        )
+    
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
-    filterset_fields = ["iso_code", "name"]
+    filterset_class = CountryFilter
     ordering_fields = ["code", "name"]
 
 
@@ -72,3 +99,10 @@ class ContactViewSet(viewsets.ModelViewSet):
         if self.action in ["create", "update", "partial_update"]:
             return ContactSerializer
         return ContactListSerializer
+
+
+class RegisterViewSet(viewsets.ModelViewSet):
+    queryset = Register.objects.all()
+    serializer_class = RegisterSerializer
+    filterset_fields = ["first_name", "last_name"]
+    ordering_fields = ["first_name", "last_name"]
