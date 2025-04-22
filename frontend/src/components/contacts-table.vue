@@ -1,15 +1,17 @@
 <script setup lang="js">
 import {
-    DxDataGrid, DxFilterRow, DxEditing, DxColumn, DxPaging, DxPager, DxForm, DxPopup, DxItem
+    DxDataGrid, DxFilterRow, DxEditing, DxPaging, DxPager, DxForm, DxPopup, DxItem
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
 
-const fields = [
-    { name: "Nome sede", field: "sede", type: "string" },
-    { name: "Ragione sociale", field: "name", type: "string" },
-    { name: "Comune", field: "city", type: "string" },
-    { name: "Telefono", field: "phone", type: "string" },
-    { name: "E-mail", field: "email", type: "string" },
+
+const columns = [
+{dataField: "sede", caption: "Nome sede", filterOperations: ['contains']},
+{dataField: "name", caption: "Ragione sociale", filterOperations: ['contains']},
+{dataField: "city", caption: "Comune", filterOperations: ['contains']},
+{dataField: "phone", caption: "Telefono", filterOperations: ['contains']},
+{dataField: "email", caption: "E-mail", filterOperations: ['contains']},
+
 ]
 
 const store = djangoStore("http://localhost:8000/api/contacts/contacts")
@@ -17,7 +19,7 @@ const store = djangoStore("http://localhost:8000/api/contacts/contacts")
 
 
 <template>
-    <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" key-expr="id">
+    <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" key-expr="id" :columns="columns">
         <DxPaging :enabled="true" />
         <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="[5, 7, 13, 20]" />
         <dx-filter-row :visible="true" />
@@ -28,7 +30,5 @@ const store = djangoStore("http://localhost:8000/api/contacts/contacts")
                 </DxItem>
             </DxForm>
         </DxEditing>
-
-        <DxColumn v-for="f in fields" :key="f.field" :caption="f.name" :data-field="f.field" :data-type="f.type" />
     </DxDataGrid>
 </template>
