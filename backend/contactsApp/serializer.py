@@ -31,7 +31,7 @@ class ContactListSerializer(serializers.ModelSerializer):
     
     sede = serializers.StringRelatedField()
     country = serializers.StringRelatedField()
-    city = serializers.StringRelatedField()
+    city = serializers.PrimaryKeyRelatedField(read_only=True)
     
     class Meta:
         fields = [

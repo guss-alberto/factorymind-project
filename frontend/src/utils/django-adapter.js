@@ -37,7 +37,6 @@ function djangoStore(url) {
           if (!Array.isArray(elem)) {
             return
           }
-
           // if nested array call search on each element
           if (elem.some(Array.isArray)) {
             elem.forEach(recursiveSearch)
@@ -54,8 +53,8 @@ function djangoStore(url) {
       const result = response.data
 
       return {
-        data: result.results,
-        totalCount: result.count,
+        data: result.results || result,
+        totalCount: result.count || result.length,
       };
     },
     async insert(values) {

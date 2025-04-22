@@ -6,12 +6,11 @@ import djangoStore from '@/utils/django-adapter';
 
 
 const columns = [
-{dataField: "sede", caption: "Nome sede", filterOperations: ['contains']},
-{dataField: "name", caption: "Ragione sociale", filterOperations: ['contains']},
-{dataField: "city", caption: "Comune", filterOperations: ['contains']},
-{dataField: "phone", caption: "Telefono", filterOperations: ['contains']},
-{dataField: "email", caption: "E-mail", filterOperations: ['contains']},
-
+    { dataField: "sede", caption: "Nome sede", filterOperations: ['contains'] },
+    { dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'] },
+    { dataField: "city", caption: "Comune", filterOperations: ['contains'] },
+    { dataField: "phone", caption: "Telefono", filterOperations: ['contains'] },
+    { dataField: "email", caption: "E-mail", filterOperations: ['contains'] },
 ]
 
 const store = djangoStore("http://localhost:8000/api/contacts/contacts")
