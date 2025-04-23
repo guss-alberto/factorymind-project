@@ -20,7 +20,6 @@ function djangoStore(url) {
     timeout: 5000,
   })
 
-
   return new CustomStore({
     key: 'id',
     async load(loadOptions) {
@@ -59,14 +58,15 @@ function djangoStore(url) {
 
       return {
         data: result.results || result,
-        totalCount: result.count || result.length,
+        totalCount: result.count || result.length || 0,
       };
     },
     async keyOf (elem) {
       return elem.id
     },
     async byKey (key) {
-      return await endpoint.get(`/${key}/`)
+      const resp = await endpoint.get(`/${key}/`)
+      return resp.data
     },
     async insert(values) {
       await endpoint.post("/", values);
