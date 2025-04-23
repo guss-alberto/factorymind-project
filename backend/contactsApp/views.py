@@ -106,6 +106,7 @@ class ContactViewSet(viewsets.ModelViewSet):
     filterset_class = ContactsFilter
     pagination_class = StandardPagination
 
+    # ordering_fields = ["name", "country__name"]
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
             return ContactSerializer

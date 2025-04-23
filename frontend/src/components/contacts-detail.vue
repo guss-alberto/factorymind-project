@@ -15,10 +15,6 @@ const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
-const filteredCities = {
-    store: cities,
-    filter: null
-}
 
 const columns = [
     { dataField: "sede", caption: "Nome sede", filterOperations: ['contains'] },
@@ -31,30 +27,39 @@ const columns = [
             editorOptions: {
                 searchEnabled: true,
             }
+        }, 
+
+        async setCellValue(rowData, value) {
+            rowData.country = value
+            rowData.region = null
+            rowData.city = null
         }
     },
     {
         dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'], lookup: {
-            dataSource: regions,
+            dataSource: (options) => ({
+                store: regions,
+                filter: options.data ? ['country', '=', options.data.country] : null,
+            }),
             valueExpr: "id",
             displayExpr: "name",
             editorOptions: {
                 searchEnabled: true,
             },
         },
-        async setCellValue (rowData, value) {
-            console.log(rowData)
+        async setCellValue(rowData, value) {
             rowData.region = value
-            rowData.cities = null
-            filteredCities.filter = ["region", "=", value]
-
+            rowData.city = null
         }
     },
 
     {
         dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
         {
-            dataSource: () => (filteredCities),
+            dataSource: (options) => ({
+                store: cities,
+                filter: options.data ? ['region', '=', options.data.region] : null,
+            }),
             valueExpr: "id",
             displayExpr: "name",
             editorOptions: {
@@ -75,11 +80,17 @@ const columns = [
             <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
                 <DxPopup :show-title="true" title="Contatto" />
                 <DxForm>
-                    <DxItem :col-count="2" :col-span="2" item-type="group" name="Informazioni">
+                    <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
+                        <DxItem data-field="sede" />
                         <DxItem data-field="name" />
-                        <DxItem data-field="city" />
+                        <DxItem data-field="email" />
+                        <DxItem data-field="phone" />
+                    </DxItem>
+                    <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
                         <DxItem data-field="country" />
                         <DxItem data-field="region" />
+                        <DxItem data-field="city" />
+                        <DxItem data-field="indirizzo" />
                     </DxItem>
                 </DxForm>
             </DxEditing>
