@@ -24,7 +24,7 @@ function djangoStore(url) {
   return new CustomStore({
     key: 'id',
     async load(loadOptions) {
-      //console.log(loadOptions)
+      console.log(loadOptions)
       let options = `?limit=${loadOptions.take}&offset=${loadOptions.skip}`
 
       if (loadOptions.searchValue){
@@ -59,7 +59,7 @@ function djangoStore(url) {
 
       return {
         data: result.results || result,
-        totalCount: result.count || result.length,
+        totalCount: result.count || result.length || 0,
       };
     },
     async keyOf (elem) {

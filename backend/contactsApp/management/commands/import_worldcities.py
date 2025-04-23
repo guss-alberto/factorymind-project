@@ -25,8 +25,7 @@ class Command(BaseCommand):
                 for row in reader:
                     iso_code = row.get("code")
                     country_name = row.get("country")
-                    region_name = row.get("region")
-                    province_code = row.get("province")
+                    province = row.get("province")
                     city_name = row.get("name_en")
             
                     country, created = Country.objects.get_or_create(
@@ -36,21 +35,21 @@ class Command(BaseCommand):
                     if created:
                         added_countries.add(country_name)
                     
-                    region_key  = (region_name, country.iso_code)
+                    region_key  = (province, country.iso_code)
                     if region_key not in added_regions:
                         region, _ = Region.objects.get_or_create(
-                            name = region_name,
+                            name = province,
                             country = country,
-                            defaults={'code': province_code}
+                            defaults={'code': province}
                         )
                         if not created and not region.code:
-                            region.code = province_code
+                            region.code = province
                             region.save()
                         added_regions.add(region_key)
                     else:
-                        region = Region.objects.get(name=region_name, country=country)
+                        region = Region.objects.get(name=province, country=country)
                         if not region.code:
-                            region.code = province_code
+                            region.code = province
                             region.save()
 
                     city, created = City.objects.get_or_create(
