@@ -66,7 +66,7 @@ class Sede(models.Model):
     """
     Modello per rappresentare le Sedi/Filiali di un'organizzazione.
     """
-    code = models.CharField(
+    code = models.IntegerField(
         max_length=20,
         unique=True,
     )

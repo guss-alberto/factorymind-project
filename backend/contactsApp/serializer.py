@@ -1,5 +1,6 @@
 from rest_framework import serializers
-
+from django.core.exceptions import ValidationError
+import re
 from .models import City, Contact, Country, Region, Sede, Register
 
 
@@ -15,6 +16,7 @@ class RegionSerializer(serializers.ModelSerializer):
         model = Region
 
 
+
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["id", "name", "region"]
@@ -25,6 +27,12 @@ class SedeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["id", "code", "name"]
         model = Sede
+
+    def validate_code(self, value):
+        if not isinstance(value, int):
+            raise serializers.ValidationError("il code deve essere integer")
+        return value
+
 
 
 class ContactListSerializer(serializers.ModelSerializer):
@@ -74,3 +82,17 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["id", "first_name", "last_name", "phone", "mobile", "email"]
         model = Register
+
+    def validate_phone(self, value):
+        if not isinstance(value, str):
+            raise serializers.ValidationError("il phone number deve essere integer")
+        if not re.match(r'^\+\d+ \d+$', value):
+            raise serializers.ValidationError("Il phone number deve iniziare con '+' seguito da uno spazio e numeri")
+        return value
+
+    def validate_mobile(self, value):
+        if not isinstance(value, str):
+            raise serializers.ValidationError("il mobile field deve essere integer")
+        if not re.match(r'^\+\d+ \d+$', value):
+            raise serializers.ValidationError("Il mobile number deve iniziare con '+' seguito da uno spazio e numeri")
+        return value
