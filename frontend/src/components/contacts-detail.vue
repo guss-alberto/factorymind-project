@@ -15,21 +15,9 @@ const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
-async function onEditorPreparing(e) {
-    if (e.parentType === 'dataRow' && e.dataField === 'city') {
-        const isStateNotSet = e.row.data.region === undefined;
-
-        e.editorOptions.disabled = isStateNotSet;
-    }
-};
-
 const filteredCities = {
     store: cities,
-    filter: null,
-}
-
-function getFilteredCities (){
-    return filteredCities
+    filter: null
 }
 
 const columns = [
@@ -46,34 +34,32 @@ const columns = [
         }
     },
     {
-        dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
-        {
-            dataSource: getFilteredCities,
-            valueExpr: "id",
-            displayExpr: "name",
-            editorOptions: {
-                searchEnabled: true,
-            },
-            calculateDisplayValue: (rowData) => {
-                if (!rowData.city) return null;
-                const city = cities.find(c => c.id === rowData.city);
-                return city ? city.name : rowData.city;
-            },
-        }
-    },
-    {
-        dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'], visible: false, lookup: {
+        dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'], lookup: {
             dataSource: regions,
             valueExpr: "id",
             displayExpr: "name",
             editorOptions: {
                 searchEnabled: true,
-            }
+            },
         },
-        setCellValue: (rowData, value) => {
-            rowData.city = null;
-            rowData.country = value.country
-            filteredCities.filter = ["region", "=", value];
+        async setCellValue (rowData, value) {
+            console.log(rowData)
+            rowData.region = value
+            rowData.cities = null
+            filteredCities.filter = ["region", "=", value]
+
+        }
+    },
+
+    {
+        dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
+        {
+            dataSource: () => (filteredCities),
+            valueExpr: "id",
+            displayExpr: "name",
+            editorOptions: {
+                searchEnabled: true,
+            },
         }
     },
     { dataField: "phone", caption: "Telefono", filterOperations: ['contains'] },
@@ -85,12 +71,11 @@ const columns = [
 <template>
 
     <div contacts v-if="selectedTab == 1">
-        <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns"
-            @editor-preparing="onEditorPreparing">
+        <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
             <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
                 <DxPopup :show-title="true" title="Contatto" />
                 <DxForm>
-                    <DxItem :col-count="2" :col-span="2" item-type="group" name="address">
+                    <DxItem :col-count="2" :col-span="2" item-type="group" name="Informazioni">
                         <DxItem data-field="name" />
                         <DxItem data-field="city" />
                         <DxItem data-field="country" />

@@ -40,10 +40,21 @@ class RegionViewSet(viewsets.ModelViewSet):
     pagination_class = StandardPagination
 
 
+class CityFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method='filter_search')
+
+    class Meta:
+        model = City
+        fields = ["region"]
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter( name__icontains=value )
+
+
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
-    filterset_fields = ["name", "region"]
+    filterset_class = CityFilter
     search_fields = ["name"]
 
 

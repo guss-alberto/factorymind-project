@@ -18,7 +18,7 @@ const store = djangoStore("http://localhost:8000/api/contacts/contacts")
 
 
 <template>
-    <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" key-expr="id" :columns="columns">
+    <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
         <DxPaging :enabled="true" />
         <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="[5, 7, 13, 20]" />
         <dx-filter-row :visible="true" />
