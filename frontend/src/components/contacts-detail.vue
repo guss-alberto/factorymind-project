@@ -15,13 +15,22 @@ const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
-const getFilteredCities = (options) => {
-    console.log(options);
-    return {
-        store: cities,
-        filter: options.data ? ['region', '=', options.data.region] : null,
+async function onEditorPreparing(e) {
+    if (e.parentType === 'dataRow' && e.dataField === 'city') {
+        const isStateNotSet = e.row.data.region === undefined;
+
+        e.editorOptions.disabled = isStateNotSet;
     }
 };
+
+const filteredCities = {
+    store: cities,
+    filter: null,
+}
+
+function getFilteredCities (){
+    return filteredCities
+}
 
 const columns = [
     { dataField: "sede", caption: "Nome sede", filterOperations: ['contains'] },
@@ -41,7 +50,15 @@ const columns = [
         {
             dataSource: getFilteredCities,
             valueExpr: "id",
-            displayExpr: "name"
+            displayExpr: "name",
+            editorOptions: {
+                searchEnabled: true,
+            },
+            calculateDisplayValue: (rowData) => {
+                if (!rowData.city) return null;
+                const city = cities.find(c => c.id === rowData.city);
+                return city ? city.name : rowData.city;
+            },
         }
     },
     {
@@ -52,6 +69,11 @@ const columns = [
             editorOptions: {
                 searchEnabled: true,
             }
+        },
+        setCellValue: (rowData, value) => {
+            rowData.city = null;
+            rowData.country = value.country
+            filteredCities.filter = ["region", "=", value];
         }
     },
     { dataField: "phone", caption: "Telefono", filterOperations: ['contains'] },
@@ -63,8 +85,8 @@ const columns = [
 <template>
 
     <div contacts v-if="selectedTab == 1">
-        <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true"
-            :columns="columns">
+        <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns"
+            @editor-preparing="onEditorPreparing">
             <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
                 <DxPopup :show-title="true" title="Contatto" />
                 <DxForm>

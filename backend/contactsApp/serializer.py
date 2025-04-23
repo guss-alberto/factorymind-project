@@ -28,34 +28,33 @@ class SedeSerializer(serializers.ModelSerializer):
 
 
 class ContactListSerializer(serializers.ModelSerializer):
-    
     sede = serializers.StringRelatedField()
     country = serializers.PrimaryKeyRelatedField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(read_only=True)
-    
+    region = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         fields = [
-            "id", 
+            "id",
             "sede",
             "name",
             "country",
             "city",
+            "region",
             "phone",
             "email",
         ]
         model = Contact
 
 
-
 class ContactSerializer(serializers.ModelSerializer):
-
     country = serializers.PrimaryKeyRelatedField(read_only=True)
     region = serializers.PrimaryKeyRelatedField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
-    
+
     class Meta:
         fields = [
-            "id", 
+            "id",
             "sede",
             "name",
             "address",
@@ -67,12 +66,11 @@ class ContactSerializer(serializers.ModelSerializer):
             "phone",
             "email",
         ]
-        
+
         model = Contact
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = ["id", "first_name", "last_name", "phone", "mobile", "email"]
         model = Register
