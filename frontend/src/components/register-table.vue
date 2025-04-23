@@ -3,14 +3,14 @@ import {
     DxDataGrid, DxFilterRow, DxEditing, DxPaging, DxPager, DxForm, DxPopup, DxItem
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
+import { phonePattern, emailPattern } from '@/utils/validation-patterns';
+
 
 /* eslint-disable */
 
 const store = djangoStore("http://localhost:8000/api/contacts/register")
 
 
-const phonePattern = /^(\+)?\d{1,12}$/;
-const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 const columns = [
     { 
@@ -42,7 +42,7 @@ const columns = [
                 type: 'pattern', 
                 pattern: phonePattern, 
                 message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-            }
+            },
         ]
     },
     { 
