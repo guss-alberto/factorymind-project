@@ -8,7 +8,7 @@ from contactsApp.models import Country, City, Region
 class Command(BaseCommand):
     def handle(self, *args, **options):
         # costrusce il percorso del file
-        csv_path = os.path.join(settings.BASE_DIR, "contactsApp/data", "worldcities.csv")
+        csv_path = os.path.join(settings.BASE_DIR, "contactsApp/data", "world_cities_geoname.csv")
         if not os.path.exists(csv_path):
             self.stderr.write(self.style.ERROR(f"File non trovato: {csv_path}"))
             return
@@ -26,6 +26,7 @@ class Command(BaseCommand):
                     iso_code = row.get("code")
                     country_name = row.get("country")
                     region_name = row.get("region")
+                    province_code = row.get("province")
                     city_name = row.get("name_en")
             
                     country, created = Country.objects.get_or_create(
@@ -40,11 +41,17 @@ class Command(BaseCommand):
                         region, _ = Region.objects.get_or_create(
                             name = region_name,
                             country = country,
-                            defaults={'code': ''}
+                            defaults={'code': province_code}
                         )
+                        if not created and not region.code:
+                            region.code = province_code
+                            region.save()
                         added_regions.add(region_key)
                     else:
                         region = Region.objects.get(name=region_name, country=country)
+                        if not region.code:
+                            region.code = province_code
+                            region.save()
 
                     city, created = City.objects.get_or_create(
                         name = city_name,
