@@ -2,8 +2,7 @@
 import djangoStore from '@/utils/django-adapter';
 import {
   DxDataGrid, DxEditing, DxForm,
-  DxItem,
-  DxPopup
+  DxItem,  DxPopup, DxFilterRow
 } from 'devextreme-vue/data-grid';
 import DxTabs from 'devextreme-vue/tabs';
 import { ref } from 'vue';
@@ -115,6 +114,7 @@ const columns = [
 <template>
   <div contacts v-if="selectedTab == 1">
     <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
+      <dx-filter-row :visible="true" />
       <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>

@@ -79,6 +79,7 @@ class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
     filterset_class = CountryFilter
+    search_fields = ["name"]
     ordering_fields = ["code", "name"]
 
 

@@ -48,8 +48,8 @@ class ContactListSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
-    country = serializers.PrimaryKeyRelatedField(read_only=True)
-    region = serializers.PrimaryKeyRelatedField(read_only=True)
+    country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all())
+    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
 
     class Meta:

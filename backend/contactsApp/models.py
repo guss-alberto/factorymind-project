@@ -115,12 +115,5 @@ class Contact(models.Model):
     
     def __str__(self):
         return f"{self.name}"
-    # Proprietà per accedere facilmente a Regione e Nazione (opzionale ma comodo)
-    @property
-    def region(self):
-        return self.city.region
-
-    @property
-    def country(self):
-        return self.city.region.country
+    
 
