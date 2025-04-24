@@ -125,7 +125,7 @@ class RegisterViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], url_path='check-email')
     def check_email(self, request):
-        email = request.data.get('email', '').lower().strip()
+        email = request.data.get('email', '').strip()
         id = request.data.get('id')
         exists = self.queryset.filter(email__iexact=email).exclude(id=id).exists()
         return Response({'available': not exists})
