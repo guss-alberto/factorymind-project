@@ -90,13 +90,13 @@ const columns = [
             <DxPopup :show-title="true" title="Contatto" />
             <DxForm>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Nome">
-                    <DxItem data-field="first_name" />
-                    <DxItem data-field="last_name" />
+                    <DxItem data-field="first_name" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
+                    <DxItem data-field="last_name" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
                 </DxItem>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Contatti">
-                    <DxItem data-field="phone" />
-                    <DxItem data-field="mobile" />
-                    <DxItem data-field="email" />
+                    <DxItem data-field="phone" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
+                    <DxItem data-field="mobile" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
+                    <DxItem data-field="email" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
                 </DxItem>
             </DxForm>
         </DxEditing>

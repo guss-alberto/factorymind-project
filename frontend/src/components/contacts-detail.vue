@@ -119,16 +119,16 @@ const columns = [
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
-            <DxItem data-field="sede" />
-            <DxItem data-field="name" />
-            <DxItem data-field="email" />
-            <DxItem data-field="phone" />
+            <DxItem data-field="sede" :editor-options="{ showClearButton: true }" />
+            <DxItem data-field="name" :editor-options="{ showClearButton: true }" />
+            <DxItem data-field="email" :editor-options="{ showClearButton: true }" />
+            <DxItem data-field="phone" :editor-options="{ showClearButton: true }" />
           </DxItem>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
-            <DxItem data-field="country" />
-            <DxItem data-field="region" />
-            <DxItem data-field="city" />
-            <DxItem data-field="indirizzo" />
+            <DxItem data-field="country" :editor-options="{ showClearButton: true, searchEnabled: true }" />
+            <DxItem data-field="region" :editor-options="{ showClearButton: true, searchEnabled: true }" />
+            <DxItem data-field="city" :editor-options="{ showClearButton: true, searchEnabled: true }" />
+            <DxItem data-field="indirizzo" :editor-options="{ showClearButton: true }" />
           </DxItem>
         </DxForm>
       </DxEditing>
