@@ -42,10 +42,6 @@ const validateUniqueEmail = async ({ value, data }) => {
   }
 };
 
-</script>
-
-
-
 const columns = [
     { 
         dataField: "first_name", 
@@ -137,7 +133,7 @@ const columns = [
                         :validation-callback="validateUniqueEmail"
                         message="Email gia' registrata"
                         />
-                    </=====
+                    </DxItem>
                 <DxForm>
                     <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
                         <DxItem data-field="first_name" />
