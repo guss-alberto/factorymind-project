@@ -1,14 +1,18 @@
 <script setup lang="js">
+import djangoStore from '@/utils/django-adapter';
 import {
-    DxDataGrid, DxEditing, DxForm, DxPopup, DxItem
+    DxDataGrid, DxEditing, DxForm,
+    DxItem,
+    DxPopup
 } from 'devextreme-vue/data-grid';
 import DxTabs from 'devextreme-vue/tabs';
-import djangoStore from '@/utils/django-adapter';
 import { ref } from 'vue';
+
+import { emailPattern, phonePattern } from '@/utils/validation-patterns';
+
 
 let selectedTab = ref(1)
 /* eslint-disable */
-
 
 const store = djangoStore("http://localhost:8000/api/contacts/contacts")
 const cities = djangoStore("http://localhost:8000/api/contacts/cities")
@@ -17,8 +21,18 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
 
 const columns = [
-    { dataField: "sede", caption: "Nome sede", filterOperations: ['contains'] },
-    { dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'] },
+    { dataField: "sede", caption: "Nome sede", filterOperations: ['contains'], validationRules: [
+
+        {
+            type:  'required'
+        }
+    ]},
+    { dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'] , validationRules: [
+
+            {
+                type:  'required'
+            }
+        ]},
     {
         dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
             dataSource: countries,
@@ -27,7 +41,7 @@ const columns = [
             editorOptions: {
                 searchEnabled: true,
             }
-        }, 
+        },
 
         async setCellValue(rowData, value) {
             rowData.country = value
@@ -67,38 +81,74 @@ const columns = [
             },
         }
     },
-    { dataField: "phone", caption: "Telefono", filterOperations: ['contains'] },
-    { dataField: "email", caption: "E-mail", filterOperations: ['contains'] },
+    { dataField: "phone", caption: "Telefono", filterOperations: ['contains'],validationRules: [
+        {
+            type: 'pattern',
+            pattern: phonePattern,
+            message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+        },
+        {
+            type:  'required'
+        }
+        ] },
+    { dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
+            {
+                type: 'pattern',
+                pattern: emailPattern,
+                message: 'Inserisci un indirizzo email valido',
+            },
+            {
+                type:  'required'
+            }
+        ]},
 ]
 </script>
 
-
 <template>
-
-    <div contacts v-if="selectedTab == 1">
-        <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
-            <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
-                <DxPopup :show-title="true" title="Contatto" />
-                <DxForm>
-                    <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
-                        <DxItem data-field="sede" />
-                        <DxItem data-field="name" />
-                        <DxItem data-field="email" />
-                        <DxItem data-field="phone" />
-                    </DxItem>
-                    <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
-                        <DxItem data-field="country" />
-                        <DxItem data-field="region" />
-                        <DxItem data-field="city" />
-                        <DxItem data-field="indirizzo" />
-                    </DxItem>
-                </DxForm>
-            </DxEditing>
-        </DxDataGrid>
-    </div>
-    <DxTabs v-model:selected-index="selectedTab">
-        <DxItem text="Profiles" />
-        <DxItem text="Contacts" />
-        <DxItem text="Privacy" />
-    </DxTabs>
+  <div contacts v-if="selectedTab == 1">
+    <DxDataGrid
+      :data-source="store"
+      :show-borders="true"
+      :remote-operations="true"
+      :columns="columns"
+    >
+      <DxEditing
+        :allow-updating="true"
+        :allow-adding="true"
+        :allow-deleting="true"
+        mode="popup"
+      >
+        <DxPopup :show-title="true" title="Contatto" />
+        <DxForm>
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
+            caption="Informazioni"
+          >
+            <DxItem data-field="sede" />
+            <DxItem data-field="name" />
+            <DxItem data-field="email" />
+            <DxItem data-field="phone" />
+          </DxItem>
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
+            caption="Indirizzo"
+          >
+            <DxItem data-field="country" />
+            <DxItem data-field="region" />
+            <DxItem data-field="city" />
+            <DxItem data-field="indirizzo" />
+          </DxItem>
+        </DxForm>
+      </DxEditing>
+    </DxDataGrid>
+  </div>
+  <DxTabs v-model:selected-index="selectedTab">
+    <DxItem text="Profiles" />
+    <DxItem text="Contacts" />
+    <DxItem text="Privacy" />
+  </DxTabs>
 </template>

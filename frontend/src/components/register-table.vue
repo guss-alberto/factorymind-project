@@ -3,18 +3,14 @@ import {
     DxDataGrid, DxFilterRow, DxEditing, DxPaging, DxPager, DxForm, DxPopup, DxItem, DxRequiredRule, DxPatternRule, DxEmailRule, DxAsyncRule
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
+import { phonePattern, emailPattern } from '@/utils/validation-patterns';
 
 const pattern = /^\d{10}$/  // pattern italiano 10 cifre
 
-const columns = [
-    { dataField: "first_name", caption: "Nome", filterOperations: ['contains'] },
-    { dataField: "last_name", caption: "Cognome", filterOperations: ['contains'] },
-    { dataField: "phone", caption: "Telefono", filterOperations: ['contains'] },
-    { dataField: "mobile", caption: "Cellulare", filterOperations: ['contains'] },
-    { dataField: "email", caption: "E-mail", filterOperations: ['contains'] },
-]
+/* eslint-disable */
 
 const store = djangoStore("http://localhost:8000/api/contacts/register")
+
 
 const validateUniqueEmail = async ({ value, data }) => {
   try {
@@ -49,6 +45,75 @@ const validateUniqueEmail = async ({ value, data }) => {
 </script>
 
 
+
+const columns = [
+    { 
+        dataField: "first_name", 
+        caption: "Nome", 
+        validationRules: [{ type: 'required' }]
+    },
+    { 
+        dataField: "last_name", 
+        caption: "Cognome", 
+        validationRules: [{ type: 'required' }]
+    },
+    { 
+        dataField: "phone", 
+        caption: "Telefono", 
+        validationRules: [
+            { 
+                type: 'pattern', 
+                pattern: phonePattern, 
+                message: 'Il telefono deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+            }
+        ]
+    },
+    { 
+        dataField: "mobile", 
+        caption: "Cellulare", 
+        validationRules: [
+            { 
+                type: 'pattern', 
+                pattern: phonePattern, 
+                message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+            },
+        ]
+    },
+    { 
+        dataField: "firstEmail", 
+        caption: "E-mail primaria", 
+        validationRules: [
+            { 
+                type: 'pattern', 
+                pattern: emailPattern, 
+                message: 'Inserisci un indirizzo email valido',
+            },
+            { 
+                type:  'required'
+            }
+        ]
+    },
+    { 
+        dataField: "secondEmail", 
+        caption: "E-mail secondaria", 
+        validationRules: [
+            { 
+                type: 'pattern', 
+                pattern: emailPattern, 
+                message: 'Inserisci un indirizzo email valido'
+            },
+            { 
+                type: 'custom',
+                validationCallback: function(options) {
+                    return !options.value || emailPattern.test(options.value);
+                },
+                message: 'Inserisci un indirizzo email valido'
+            }
+        ]
+    },
+]
+</script>
+
 <template>
     <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
         <DxPaging :enabled="true" />
@@ -72,7 +137,17 @@ const validateUniqueEmail = async ({ value, data }) => {
                         :validation-callback="validateUniqueEmail"
                         message="Email gia' registrata"
                         />
+                    </=====
+                <DxForm>
+                    <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
+                        <DxItem data-field="first_name" />
+                        <DxItem data-field="last_name" />
+                        <DxItem data-field="firstEmail" />
+                        <DxItem data-field="secondEmail" />
+                        <DxItem data-field="mobile" />
+                        <DxItem data-field="phone" />
                     </DxItem>
+                </DxForm>
                 </DxItem>
             </DxForm>
         </DxEditing>
