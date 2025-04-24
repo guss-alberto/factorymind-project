@@ -1,5 +1,9 @@
-import django_filters
-from rest_framework import viewsets
+import django_filters   
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
 from .models import City, Contact, Country, Region, Sede, Register
@@ -118,3 +122,9 @@ class RegisterViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     filterset_fields = ["first_name", "last_name"]
     ordering_fields = ["first_name", "last_name"]
+
+    @action(detail=False, methods=['post'], url_path='check-email')
+    def check_email(self, request):
+        email = request.data.get('email', '').lower().strip()
+        exists = self.queryset.filter(email__iexact=email).exists()
+        return Response({'available': not exists})
