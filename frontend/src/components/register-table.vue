@@ -4,7 +4,7 @@ import {
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
 import axios from 'axios';
-import { phonePattern, emailPattern } from '@/utils/validation-patterns';
+import { phonePattern, emailPattern, phoneNumberField } from '@/utils/validation-patterns';
 
 /* eslint-disable */
 
@@ -21,20 +21,7 @@ const columns = [
         caption: "Cognome",
         validationRules: [{ type: 'required' }]
     },
-    {
-        dataField: "mobile",
-        caption: "Cellulare",
-        validationRules: [
-            {
-                type: 'pattern',
-                pattern: phonePattern,
-                message: 'Il telefono deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-            },
-            {
-                type: 'required'
-            }
-        ]
-    },
+ 
     {
         dataField: "phone",
         caption: "Telefono",
@@ -42,9 +29,29 @@ const columns = [
             {
                 type: 'pattern',
                 pattern: phonePattern,
-                message: 'Il telefono deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+                message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
+            },
+            {
+                type: 'required'
             }
-        ]
+        ],
+        editorOptions: { 
+            onKeyPress: phoneNumberField
+        }
+    },
+    {
+        dataField: "mobile",
+        caption: "Cellulare",
+        validationRules: [
+            {
+                type: 'pattern',
+                pattern: phonePattern,
+                message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
+            }
+        ],
+        editorOptions: { 
+            onKeyPress: phoneNumberField
+        }
     },
     {
         dataField: "email",
