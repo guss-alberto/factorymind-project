@@ -84,13 +84,28 @@ class Sede(models.Model):
         return f"{self.name}"
 
 
+class Register(models.Model):
+    # Campi per l'anagrafica
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20)
+    mobile = models.CharField(max_length=20)
+    email = models.EmailField()
+
+    class Meta:
+        ordering = ['first_name', 'last_name']
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
 class Contact(models.Model):
-    sede = models.ForeignKey(Sede, on_delete=models.CASCADE, related_name='contacts')
+    #register = models.ForeignKey(Register, on_delete=models.CASCADE, related_name='contacts')
+    sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
     address = models.CharField(max_length=50)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='contacts')
-    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='contacts')
-    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='contacts')
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
     
     # Campi per l'anagrafica
     first_name = models.CharField(max_length=50)
@@ -109,16 +124,3 @@ class Contact(models.Model):
     def country(self):
         return self.city.region.country
 
-class Register(models.Model):
-    # Campi per l'anagrafica
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    phone = models.CharField(max_length=20)
-    mobile = models.CharField(max_length=20)
-    email = models.EmailField()
-
-    class Meta:
-        ordering = ['first_name', 'last_name']
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
