@@ -7,19 +7,22 @@ import {
 import DxTabs from 'devextreme-vue/tabs';
 import { ref, defineProps } from 'vue';
 
-import { emailPattern, phonePattern } from '@/utils/validation-patterns';
+import { emailPattern, phonePattern, phoneNumberField } from '@/utils/validation-patterns';
 
 let props = defineProps(["id"])
-console.log(props.id)
 
 let selectedTab = ref(1)
 /* eslint-disable */
 
 const contacts = djangoStore("http://localhost:8000/api/contacts/contacts")
 const aaa = {
-    store: contacts,
-    filter: ["register", "=", props.id],
-  }
+  store: contacts,
+  filter: ["register", "=", props.id],
+}
+function onRowInserting(e) {
+  e.data.register = props.id
+}
+
 
 const sedi = djangoStore("http://localhost:8000/api/contacts/sedi")
 const cities = djangoStore("http://localhost:8000/api/contacts/cities")
@@ -29,7 +32,8 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
 const columns = [
   {
-    dataField: "sede", caption: "Nome sede", filterOperations: ['contains'], validationRules: [
+    dataField: "sede", caption: "Nome sede", filterOperations: ['contains'],
+    validationRules: [
       {
         type: 'required'
       }
@@ -43,9 +47,9 @@ const columns = [
       searchEnabled: true,
     },
   },
-
   {
-    dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'], validationRules: [
+    dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'],
+    validationRules: [
 
       {
         type: 'required'
@@ -53,7 +57,8 @@ const columns = [
     ]
   },
   {
-    dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
+    dataField: "country", caption: "Paese", filterOperations: ['contains'],
+    lookup: {
       dataSource: countries,
       valueExpr: "iso_code",
       displayExpr: e => `${e.iso_code} - ${e.name}`,
@@ -70,7 +75,8 @@ const columns = [
     }
   },
   {
-    dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'], lookup: {
+    dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'],
+    lookup: {
       dataSource: (options) => ({
         store: regions,
         filter: options.data ? ['country', '=', options.data.country] : null,
@@ -89,7 +95,8 @@ const columns = [
   },
 
   {
-    dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
+    dataField: "city", caption: "Comune", filterOperations: ['contains'],
+    lookup:
     {
       dataSource: (options) => ({
         store: cities,
@@ -104,19 +111,32 @@ const columns = [
     },
   },
   {
-    dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
-      {
-        type: 'pattern',
-        pattern: phonePattern,
-        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-      },
+    dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],
+    validationRules: [
       {
         type: 'required'
       }
     ]
   },
   {
-    dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
+    dataField: "phone", caption: "Telefono", filterOperations: ['contains'],
+    validationRules: [
+      {
+        type: 'pattern',
+        pattern: phonePattern,
+        message: 'Il cellulare deve contenere solo numeri'
+      },
+      {
+        type: 'required'
+      }
+    ],
+    editorOptions: {
+      onKeyPress: phoneNumberField
+    }
+  },
+  {
+    dataField: "email", caption: "E-mail", filterOperations: ['contains'],
+    validationRules: [
       {
         type: 'pattern',
         pattern: emailPattern,
@@ -132,7 +152,8 @@ const columns = [
 
 <template>
   <div contacts v-if="selectedTab == 1">
-    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns">
+    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
+      @row-inserting="onRowInserting">
       <dx-filter-row :visible="true" />
       <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />
@@ -147,7 +168,7 @@ const columns = [
             <DxItem data-field="country" />
             <DxItem data-field="region" />
             <DxItem data-field="city" />
-            <DxItem data-field="indirizzo" />
+            <DxItem data-field="address" />
           </DxItem>
         </DxForm>
       </DxEditing>

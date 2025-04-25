@@ -109,9 +109,6 @@ class Contact(models.Model):
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
 
-    # Campi per l'anagrafica
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
 

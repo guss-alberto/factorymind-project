@@ -28,7 +28,7 @@ class SedeSerializer(serializers.ModelSerializer):
 
 
 class ContactListSerializer(serializers.ModelSerializer):
-    sede = serializers.StringRelatedField()
+    sede = serializers.PrimaryKeyRelatedField(read_only=True)
     country = serializers.PrimaryKeyRelatedField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(read_only=True)
     region = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -39,6 +39,7 @@ class ContactListSerializer(serializers.ModelSerializer):
             "sede",
             "name",
             "country",
+            "register",
             "city",
             "region",
             "phone",
@@ -64,8 +65,6 @@ class ContactSerializer(serializers.ModelSerializer):
             "region",
             "city",
             "register",
-            "first_name",
-            "last_name",
             "phone",
             "email",
         ]
