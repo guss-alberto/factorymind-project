@@ -98,6 +98,7 @@ class ContactsFilter(django_filters.FilterSet):
     class Meta:
         model = Contact
         fields = {
+            "register": ["exact"],
             "id": ["exact", "lt", "gt", "lte", "gte", "range"],
             "name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
             "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],

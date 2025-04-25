@@ -55,7 +55,7 @@ function djangoStore(url, key) {
 
           let [field, operator, value] = elem;
           operator = odataToDjango[operator] || "";
-          params[`${field}${operator}`]= value
+          params[`${field}${operator}`] = value
         }
         recursiveSearch(loadOptions.filter)
       }

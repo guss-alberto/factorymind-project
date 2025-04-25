@@ -10,14 +10,17 @@ import { ref, defineProps } from 'vue';
 import { emailPattern, phonePattern } from '@/utils/validation-patterns';
 
 let props = defineProps(["id"])
+console.log(props.id)
 
 let selectedTab = ref(1)
 /* eslint-disable */
 
-const store = {
-  store: djangoStore("http://localhost:8000/api/contacts/contacts"),
-  filter: [["register", "=", props.id]]
-}
+const contacts = djangoStore("http://localhost:8000/api/contacts/contacts")
+const aaa = {
+    store: contacts,
+    filter: ["register", "=", props.id],
+  }
+
 const sedi = djangoStore("http://localhost:8000/api/contacts/sedi")
 const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
@@ -129,7 +132,7 @@ const columns = [
 
 <template>
   <div contacts v-if="selectedTab == 1">
-    <DxDataGrid :data-source="store" :show-borders="true" :remote-operations="true" :columns="columns">
+    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns">
       <dx-filter-row :visible="true" />
       <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />
