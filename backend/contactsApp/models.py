@@ -50,6 +50,7 @@ class City(models.Model):
     )
     name = models.CharField(max_length=10)
     postcode = models.CharField(max_length=10, null=True)
+
     class Meta:
         verbose_name_plural = "Cities"
         ordering = ["region", "name"]  # Ordina per regione e poi per nome
@@ -67,13 +68,8 @@ class Sede(models.Model):
     Modello per rappresentare le Sedi/Filiali di un'organizzazione.
     """
 
-    code = models.CharField(
-        max_length=20,
-        unique=True,
-    )
+    code = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
-    # Si potrebbero aggiungere qui dettagli della sede come indirizzo, telefono, etc.
-    # se rilevanti indipendentemente dai contatti specifici.
 
     class Meta:
         verbose_name_plural = "Sedi"
@@ -91,7 +87,7 @@ class Register(models.Model):
     phone_ext = models.CharField(max_length=20, null=True)
     mobile = models.CharField(max_length=20, null=True)
     email = models.EmailField()
-    vat_numer = models.CharField(max_length=20, null=True)
+    vat_number = models.CharField(max_length=20, null=True)
 
     class Meta:
         ordering = ["last_name", "first_name"]
@@ -104,13 +100,17 @@ class Contact(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE, related_name='contacts')
     sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
-    address = models.CharField(max_length=50)
+    phone = models.CharField(max_length=20, null=True)
+    phone_ext = models.CharField(max_length=20, null=True)
+    email = models.EmailField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
+    address = models.CharField(max_length=50)
 
-    phone = models.CharField(max_length=20)
-    email = models.EmailField()
+    class Meta:
+        verbose_name_plural = "Contacts"
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"

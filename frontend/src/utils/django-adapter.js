@@ -38,7 +38,7 @@ function djangoStore(url, key) {
 
       if (loadOptions.sort) {
         let sort = loadOptions.sort.map((o) => { return `${o.desc ? "" : "-"}${o.selector}` })
-        parms.ordering = sort.join(",")
+        params.ordering = sort.join(",")
       }
 
       if (loadOptions.filter) {

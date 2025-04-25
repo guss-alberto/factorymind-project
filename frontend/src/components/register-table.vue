@@ -12,20 +12,36 @@ import ContactsDetail from './contacts-detail.vue';
 const store = djangoStore("http://localhost:8000/api/contacts/register")
 
 const columns = [
+{
+        dataField: "last_name",
+        caption: "Cognome",
+        validationRules: [{ type: 'required' }]
+    },
     {
         dataField: "first_name",
         caption: "Nome",
         validationRules: [{ type: 'required' }]
     },
     {
-        dataField: "last_name",
-        caption: "Cognome",
-        validationRules: [{ type: 'required' }]
-    },
-
-    {
         dataField: "phone",
         caption: "Telefono",
+        validationRules: [
+            {
+                type: 'pattern',
+                pattern: phonePattern,
+                message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
+            },
+            {
+                type: 'required'
+            }
+        ],
+        editorOptions: {
+            onKeyPress: phoneNumberField
+        }
+    },
+    {
+        dataField: "phone_ext",
+        caption: "Telefono ext.",
         validationRules: [
             {
                 type: 'pattern',
@@ -81,6 +97,11 @@ const columns = [
                 type: 'required'
             }
         ]
+    },
+    {
+        dataField: "vat_number",
+        caption: "IVA",
+        validationRules: [{ type: 'required' }]
     },
 ]
 </script>

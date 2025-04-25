@@ -57,8 +57,43 @@ const columns = [
     ]
   },
   {
-    dataField: "country", caption: "Paese", filterOperations: ['contains'],
-    lookup: {
+    dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
+      {
+        type: 'pattern',
+        pattern: phonePattern,
+        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+      },
+      {
+        type: 'required'
+      }
+    ]
+  },
+  {
+    dataField: "phone_ext", caption: "Telefono agg.", filterOperations: ['contains'], validationRules: [
+      {
+        type: 'pattern',
+        pattern: phonePattern,
+        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+      },
+      {
+        type: 'required'
+      }
+    ]
+  },
+  {
+    dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
+      {
+        type: 'pattern',
+        pattern: emailPattern,
+        message: 'Inserisci un indirizzo email valido',
+      },
+      {
+        type: 'required'
+      }
+    ]
+  },
+  {
+    dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
       dataSource: countries,
       valueExpr: "iso_code",
       displayExpr: e => `${e.iso_code} - ${e.name}`,
@@ -161,8 +196,9 @@ const columns = [
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
             <DxItem data-field="sede" />
             <DxItem data-field="name" />
-            <DxItem data-field="email" />
             <DxItem data-field="phone" />
+            <DxItem data-field="phone_ext" />
+            <DxItem data-field="email" />
           </DxItem>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
             <DxItem data-field="country" />
