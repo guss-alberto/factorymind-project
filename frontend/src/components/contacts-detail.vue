@@ -2,18 +2,23 @@
 import djangoStore from '@/utils/django-adapter';
 import {
   DxDataGrid, DxEditing, DxForm,
-  DxItem,  DxPopup, DxFilterRow
+  DxItem, DxPopup, DxFilterRow
 } from 'devextreme-vue/data-grid';
 import DxTabs from 'devextreme-vue/tabs';
-import { ref } from 'vue';
+import { ref, defineProps } from 'vue';
 
 import { emailPattern, phonePattern } from '@/utils/validation-patterns';
 
+let props = defineProps(["id"])
 
 let selectedTab = ref(1)
 /* eslint-disable */
 
-const store = djangoStore("http://localhost:8000/api/contacts/contacts")
+const store = {
+  store: djangoStore("http://localhost:8000/api/contacts/contacts"),
+  filter: [["register", "=", props.id]]
+}
+const sedi = djangoStore("http://localhost:8000/api/contacts/sedi")
 const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
@@ -22,12 +27,20 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 const columns = [
   {
     dataField: "sede", caption: "Nome sede", filterOperations: ['contains'], validationRules: [
-
       {
         type: 'required'
       }
-    ]
+    ],
+    lookup: {
+      dataSource: sedi,
+      valueExpr: "id",
+      displayExpr: e => `${e.code} - ${e.name}`,
+    },
+    editorOptions: {
+      searchEnabled: true,
+    },
   },
+
   {
     dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'], validationRules: [
 
@@ -41,9 +54,10 @@ const columns = [
       dataSource: countries,
       valueExpr: "iso_code",
       displayExpr: e => `${e.iso_code} - ${e.name}`,
-      editorOptions: {
-        searchEnabled: true,
-      }
+    },
+    editorOptions: {
+      showClearButton: true,
+      searchEnabled: true,
     },
 
     async setCellValue(rowData, value) {
@@ -63,6 +77,7 @@ const columns = [
     },
     editorOptions: {
       searchEnabled: true,
+      showClearButton: true,
     },
     async setCellValue(rowData, value) {
       rowData.region = value
@@ -70,44 +85,45 @@ const columns = [
     }
   },
 
-{
-  dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
   {
-    dataSource: (options) => ({
-      store: cities,
-      filter: options.data ? ['region', '=', options.data.region] : null,
-    }),
+    dataField: "city", caption: "Comune", filterOperations: ['contains'], lookup:
+    {
+      dataSource: (options) => ({
+        store: cities,
+        filter: options.data ? ['region', '=', options.data.region] : null,
+      }),
       valueExpr: "id",
-        displayExpr: "name",
-          editorOptions: {
+      displayExpr: "name",
+    },
+    editorOptions: {
       searchEnabled: true,
+      showClearButton: true,
+    },
+  },
+  {
+    dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
+      {
+        type: 'pattern',
+        pattern: phonePattern,
+        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
       },
-  }
-},
-{
-  dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
-    {
-      type: 'pattern',
-      pattern: phonePattern,
-      message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-    },
-    {
-      type: 'required'
-    }
-  ]
-},
-{
-  dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
-    {
-      type: 'pattern',
-      pattern: emailPattern,
-      message: 'Inserisci un indirizzo email valido',
-    },
-    {
-      type: 'required'
-    }
-  ]
-},
+      {
+        type: 'required'
+      }
+    ]
+  },
+  {
+    dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
+      {
+        type: 'pattern',
+        pattern: emailPattern,
+        message: 'Inserisci un indirizzo email valido',
+      },
+      {
+        type: 'required'
+      }
+    ]
+  },
 ]
 </script>
 
@@ -119,16 +135,16 @@ const columns = [
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
-            <DxItem data-field="sede" :editor-options="{ showClearButton: true }" />
-            <DxItem data-field="name" :editor-options="{ showClearButton: true }" />
-            <DxItem data-field="email" :editor-options="{ showClearButton: true }" />
-            <DxItem data-field="phone" :editor-options="{ showClearButton: true }" />
+            <DxItem data-field="sede" />
+            <DxItem data-field="name" />
+            <DxItem data-field="email" />
+            <DxItem data-field="phone" />
           </DxItem>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
-            <DxItem data-field="country" :editor-options="{ showClearButton: true, searchEnabled: true }" />
-            <DxItem data-field="region" :editor-options="{ showClearButton: true, searchEnabled: true }" />
-            <DxItem data-field="city" :editor-options="{ showClearButton: true, searchEnabled: true }" />
-            <DxItem data-field="indirizzo" :editor-options="{ showClearButton: true }" />
+            <DxItem data-field="country" />
+            <DxItem data-field="region" />
+            <DxItem data-field="city" />
+            <DxItem data-field="indirizzo" />
           </DxItem>
         </DxForm>
       </DxEditing>

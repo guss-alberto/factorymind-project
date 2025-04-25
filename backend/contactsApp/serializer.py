@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Contact, Country, Region, Sede, Register
+from .models import City, Contact, Country, Region, Register, Sede
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -48,6 +48,8 @@ class ContactListSerializer(serializers.ModelSerializer):
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    register = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    sede = serializers.PrimaryKeyRelatedField(queryset=Sede.objects.all())
     country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all())
     region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
@@ -61,6 +63,7 @@ class ContactSerializer(serializers.ModelSerializer):
             "country",
             "region",
             "city",
+            "register",
             "first_name",
             "last_name",
             "phone",

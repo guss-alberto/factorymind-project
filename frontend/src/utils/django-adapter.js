@@ -14,25 +14,31 @@ let odataToDjango = {
 }
 
 
-function djangoStore(url) {
+function djangoStore(url, key) {
   const endpoint = axios.create({
     baseURL: url,
     timeout: 5000,
   })
 
   return new CustomStore({
-    key: 'id',
+    key: key || "id",
     async load(loadOptions) {
-      //console.log(loadOptions)
-      let options = `?limit=${loadOptions.take}&offset=${loadOptions.skip}`
+      // console.log(url)
+      // console.log(loadOptions)
+      let params = {}
 
-      if (loadOptions.searchValue){
-        options += "&_search=" + loadOptions.searchValue
+      if (loadOptions.take) {
+        params.limit = loadOptions.take
+        params.offset = loadOptions.skip
+      }
+
+      if (loadOptions.searchValue) {
+        params._search = loadOptions.searchValue
       }
 
       if (loadOptions.sort) {
         let sort = loadOptions.sort.map((o) => { return `${o.desc ? "" : "-"}${o.selector}` })
-        options += "&ordering=" + sort.join(",")
+        parms.ordering = sort.join(",")
       }
 
       if (loadOptions.filter) {
@@ -49,11 +55,11 @@ function djangoStore(url) {
 
           let [field, operator, value] = elem;
           operator = odataToDjango[operator] || "";
-          options += `&${field}${operator}=${value}`;
+          params[`${field}${operator}`]= value
         }
         recursiveSearch(loadOptions.filter)
       }
-      const response = await endpoint.get("/" + options);
+      const response = await endpoint.get("/", { params });
       const result = response.data
 
       return {
@@ -61,10 +67,10 @@ function djangoStore(url) {
         totalCount: result.count || result.length || 0,
       };
     },
-    async keyOf (elem) {
+    async keyOf(elem) {
       return elem.id
     },
-    async byKey (key) {
+    async byKey(key) {
       const resp = await endpoint.get(`/${key}/`)
       return resp.data
     },

@@ -1,5 +1,4 @@
 <script setup>
-import ContactsDetail from '@/components/contacts-detail.vue';
 import RegisterTable from '@/components/register-table.vue';
 </script>
 
@@ -7,7 +6,6 @@ import RegisterTable from '@/components/register-table.vue';
 
   <div id="data-grid">
     <RegisterTable />
-    <ContactsDetail/>
   </div>
 </template>
 

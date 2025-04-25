@@ -1,10 +1,11 @@
 <script setup lang="js">
 import {
-    DxDataGrid, DxFilterRow, DxEditing, DxPaging, DxPager, DxForm, DxPopup, DxItem
+    DxDataGrid, DxFilterRow, DxEditing, DxPaging, DxPager, DxForm, DxPopup, DxItem, DxMasterDetail
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
 import axios from 'axios';
 import { phonePattern, emailPattern, phoneNumberField } from '@/utils/validation-patterns';
+import ContactsDetail from './contacts-detail.vue';
 
 /* eslint-disable */
 
@@ -21,7 +22,7 @@ const columns = [
         caption: "Cognome",
         validationRules: [{ type: 'required' }]
     },
- 
+
     {
         dataField: "phone",
         caption: "Telefono",
@@ -35,7 +36,7 @@ const columns = [
                 type: 'required'
             }
         ],
-        editorOptions: { 
+        editorOptions: {
             onKeyPress: phoneNumberField
         }
     },
@@ -47,9 +48,12 @@ const columns = [
                 type: 'pattern',
                 pattern: phonePattern,
                 message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
+            },
+            {
+                type: 'required'
             }
         ],
-        editorOptions: { 
+        editorOptions: {
             onKeyPress: phoneNumberField
         }
     },
@@ -86,17 +90,21 @@ const columns = [
         <DxPaging :enabled="true" />
         <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="[2, 5, 10, 20]" />
         <dx-filter-row :visible="true" />
+        <DxMasterDetail :enabled="true" template="masterDetailTemplate" />
+        <template #masterDetailTemplate="{ data }">
+            <ContactsDetail :id = "data.data.id"/>
+        </template>
         <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
             <DxPopup :show-title="true" title="Contatto" />
             <DxForm>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Nome">
-                    <DxItem data-field="first_name" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
-                    <DxItem data-field="last_name" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
+                    <DxItem data-field="first_name" />
+                    <DxItem data-field="last_name" />
                 </DxItem>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Contatti">
-                    <DxItem data-field="phone" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
-                    <DxItem data-field="mobile" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
-                    <DxItem data-field="email" :editor-options="{ showClearButton: true, searchEnabled: true }"/>
+                    <DxItem data-field="phone" />
+                    <DxItem data-field="mobile" />
+                    <DxItem data-field="email" />
                 </DxItem>
             </DxForm>
         </DxEditing>

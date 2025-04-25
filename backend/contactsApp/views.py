@@ -91,9 +91,9 @@ class SedeViewSet(viewsets.ModelViewSet):
 
 
 class ContactsFilter(django_filters.FilterSet):
-    sede__icontains = django_filters.CharFilter(field_name="sede__name", lookup_expr="icontains")
-    country__icontains = django_filters.CharFilter(field_name="country__name", lookup_expr="icontains")
-    city__icontains = django_filters.CharFilter(field_name="city__name", lookup_expr="icontains")
+    # sede__icontains = django_filters.CharFilter(field_name="sede__name", lookup_expr="icontains")
+    # country__icontains = django_filters.CharFilter(field_name="country__name", lookup_expr="icontains")
+    # city__icontains = django_filters.CharFilter(field_name="city__name", lookup_expr="icontains")
 
     class Meta:
         model = Contact
