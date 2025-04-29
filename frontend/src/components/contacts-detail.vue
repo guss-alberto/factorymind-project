@@ -66,7 +66,10 @@ const columns = [
       {
         type: 'required'
       }
-    ]
+    ], 
+    editorOptions: {
+      onKeyPress: phoneNumberField
+    }
   },
   {
     dataField: "phone_ext", caption: "Telefono agg.", filterOperations: ['contains'], validationRules: [
@@ -75,7 +78,13 @@ const columns = [
         pattern: phonePattern,
         message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
       },
-    ]
+      {
+        type: 'required'
+      }
+    ], 
+    editorOptions: {
+      onKeyPress: phoneNumberField
+    }
   },
   {
     dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
@@ -87,7 +96,10 @@ const columns = [
       {
         type: 'required'
       }
-    ]
+    ], 
+    editorOptions: {
+      onKeyPress: phoneNumberField
+    }
   },
   {
     dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
@@ -150,36 +162,7 @@ const columns = [
       }
     ]
   },
-  {
-    dataField: "phone", caption: "Telefono", filterOperations: ['contains'],
-    validationRules: [
-      {
-        type: 'pattern',
-        pattern: phonePattern,
-        message: 'Il cellulare deve contenere solo numeri'
-      },
-      {
-        type: 'required'
-      }
-    ],
-    editorOptions: {
-      onKeyPress: phoneNumberField
-    }
-  },
-  {
-    dataField: "email", caption: "E-mail", filterOperations: ['contains'],
-    validationRules: [
-      {
-        type: 'pattern',
-        pattern: emailPattern,
-        message: 'Inserisci un indirizzo email valido',
-      },
-      {
-        type: 'required'
-      }
-    ]
-  },
-]
+] 
 </script>
 
 <template>
