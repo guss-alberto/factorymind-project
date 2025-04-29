@@ -18,6 +18,8 @@ from .serializer import (
 )
 
 
+
+
 class StandardPagination(LimitOffsetPagination):
     page_size = 10
     max_page_size = 100
@@ -89,6 +91,7 @@ class SedeViewSet(viewsets.ModelViewSet):
     filterset_fields = ["code", "name"]
     ordering_fields = ["code", "name"]
 
+search_operations = ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"]
 
 class ContactsFilter(django_filters.FilterSet):
     # sede__icontains = django_filters.CharFilter(field_name="sede__name", lookup_expr="icontains")
@@ -100,11 +103,11 @@ class ContactsFilter(django_filters.FilterSet):
         fields = {
             "register": ["exact"],
             "id": ["exact", "lt", "gt", "lte", "gte", "range"],
-            "name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "phone": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "phone_ext": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "address": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "name": search_operations,
+            "email": search_operations,
+            "phone": search_operations,
+            "phone_ext": search_operations,
+            "address": search_operations,
         }
 
 
@@ -116,9 +119,11 @@ class ContactViewSet(viewsets.ModelViewSet):
 
     # ordering_fields = ["name", "country__name"]
     def get_serializer_class(self):
-        if self.action in ["create", "update", "partial_update"]:
+        if self.action in ["create", "update", "retrieve", "partial_update"]:
             return ContactSerializer
         return ContactListSerializer
+
+
 
 class RegisterFilter(django_filters.FilterSet):
 
@@ -126,13 +131,13 @@ class RegisterFilter(django_filters.FilterSet):
         model = Register
         fields = {
             "id": ["exact", "lt", "gt", "lte", "gte", "range"],
-            "last_name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "first_name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "phone": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "phone_ext": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "mobile": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
-            "vat_number": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "last_name": search_operations,
+            "first_name": search_operations,
+            "email": search_operations,
+            "phone": search_operations,
+            "phone_ext":search_operations,
+            "mobile":search_operations,
+            "vat_number":search_operations,
         }
 
 class RegisterViewSet(viewsets.ModelViewSet):

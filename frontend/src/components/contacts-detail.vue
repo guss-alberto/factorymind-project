@@ -66,7 +66,7 @@ const columns = [
       {
         type: 'required'
       }
-    ], 
+    ],
     editorOptions: {
       onKeyPress: phoneNumberField
     }
@@ -81,7 +81,7 @@ const columns = [
       {
         type: 'required'
       }
-    ], 
+    ],
     editorOptions: {
       onKeyPress: phoneNumberField
     }
@@ -132,7 +132,13 @@ const columns = [
     async setCellValue(rowData, value) {
       rowData.region = value
       rowData.city = null
-    }
+      if (!value) return
+
+      if (!rowData.country) { // reverse cascading only if region is not selected
+        const selectedRegion = await regions.byKey(value);
+        rowData.country = selectedRegion.country;
+      }
+    },
   },
 
   {
@@ -149,6 +155,19 @@ const columns = [
     editorOptions: {
       searchEnabled: true,
       showClearButton: true,
+    },
+    async setCellValue(rowData, value) {
+      rowData.city = value;
+      if (!value) return
+
+      if (!rowData.region) { // reverse cascading only if region is not selected
+        const selectedCity = await cities.byKey(value);
+        rowData.region = selectedCity.region;
+      }
+      if (!rowData.country) { // reverse cascading only if region is not selected
+        const selectedRegion = await regions.byKey(rowData.region);
+        rowData.country = selectedRegion.country;
+      }
     },
   },
   {
