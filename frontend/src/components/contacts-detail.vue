@@ -9,6 +9,7 @@ import { ref, defineProps } from 'vue';
 
 import { emailPattern, phonePattern, phoneNumberField } from '@/utils/validation-patterns';
 
+
 let props = defineProps(["id"])
 
 let selectedTab = ref(1)
@@ -117,27 +118,31 @@ const columns = [
   },
   {
     dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'],
-    lookup: {
-      dataSource: (options) => ({
-        store: regions,
-        filter: options.data ? ['country', '=', options.data.country] : null,
-      }),
-      valueExpr: "id",
-      displayExpr: e => `${e.code} - ${e.name}`,
-    },
+    editorType: 'dxAutocomplete', 
     editorOptions: {
-      searchEnabled: true,
-      showClearButton: true,
-    },
-    async setCellValue(rowData, value) {
-      rowData.region = value
-      rowData.city = null
-      if (!value) return
+      minSearchLength: 0,
+      showClearButton: true, 
+      dataSource: {
+        store: regions,
+        filter: (options) => {
+          return options.data ? ['country', '=', options.data.country]    : null;
+        },
+        paginate: true 
+      },
+      valueExpr: 'name', 
+      
+      // Cascading
+      async  onSelectionChanged (e) {
+        console.log(e)
+        if (e.selectedItem){
+          const selectedCountry = await countries.byKey(e.selectedItem.country);
+          const form = e.component.option('form');
+              form.updateData({
+                country: selectedCountry.id
+              });
 
-      if (!rowData.country) { // reverse cascading only if region is not selected
-        const selectedRegion = await regions.byKey(value);
-        rowData.country = selectedRegion.country;
-      }
+        }
+      },
     },
   },
 

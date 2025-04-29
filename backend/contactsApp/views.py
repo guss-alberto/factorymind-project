@@ -51,7 +51,7 @@ class CityFilter(django_filters.FilterSet):
 
     class Meta:
         model = City
-        fields = ["region"]
+        fields = ["region", "region__country"]
 
     def filter_search(self, queryset, name, value):
         return queryset.filter( name__icontains=value )
