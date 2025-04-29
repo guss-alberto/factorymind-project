@@ -48,9 +48,6 @@ const columns = [
                 pattern: phonePattern,
                 message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
             },
-            {
-                type: 'required'
-            }
         ],
         editorOptions: {
             onKeyPress: phoneNumberField
@@ -65,9 +62,6 @@ const columns = [
                 pattern: phonePattern,
                 message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
             },
-            {
-                type: 'required'
-            }
         ],
         editorOptions: {
             onKeyPress: phoneNumberField
@@ -101,7 +95,11 @@ const columns = [
     {
         dataField: "vat_number",
         caption: "IVA",
-        validationRules: [{ type: 'required' }]
+        validationRules: [
+            { 
+            type: 'required' 
+        }
+    ]
     },
 ]
 </script>
@@ -126,6 +124,7 @@ const columns = [
                     <DxItem data-field="phone" />
                     <DxItem data-field="mobile" />
                     <DxItem data-field="email" />
+                    <DxItem data-field="vat_number" />
                 </DxItem>
             </DxForm>
         </DxEditing>

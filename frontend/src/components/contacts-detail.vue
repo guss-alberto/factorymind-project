@@ -75,9 +75,6 @@ const columns = [
         pattern: phonePattern,
         message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
       },
-      {
-        type: 'required'
-      }
     ]
   },
   {
