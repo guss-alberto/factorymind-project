@@ -7,3 +7,4 @@ export function phoneNumberField(e) {
         e.event.preventDefault();
     }
 }
+export const vatPattern = /^[A-Za-z]{2}[\d]{10,15}$/;

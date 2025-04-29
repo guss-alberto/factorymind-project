@@ -4,7 +4,7 @@ import {
 } from 'devextreme-vue/data-grid';
 import djangoStore from '@/utils/django-adapter';
 import axios from 'axios';
-import { phonePattern, emailPattern, phoneNumberField } from '@/utils/validation-patterns';
+import { phonePattern, emailPattern, phoneNumberField, vatPattern } from '@/utils/validation-patterns';
 import ContactsDetail from './contacts-detail.vue';
 
 /* eslint-disable */
@@ -94,8 +94,13 @@ const columns = [
     },
     {
         dataField: "vat_number",
-        caption: "IVA",
+        caption: "P.IVA",
         validationRules: [
+            {
+                type : 'pattern',
+                pattern: vatPattern,
+                message: 'Inserisci una P.IVA valida (Es. IT12345678912)',
+            },
             { 
             type: 'required' 
         }
