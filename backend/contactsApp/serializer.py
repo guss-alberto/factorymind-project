@@ -92,5 +92,5 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "first_name", "last_name", "phone", "mobile", "email"]
+        fields = ["id", "first_name", "last_name", "phone", "mobile", "email", "vat_number"]
         model = Register
