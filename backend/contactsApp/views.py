@@ -103,6 +103,8 @@ class ContactsFilter(django_filters.FilterSet):
             "name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
             "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
             "phone": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "phone_ext": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "address": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
         }
 
 
@@ -118,11 +120,25 @@ class ContactViewSet(viewsets.ModelViewSet):
             return ContactSerializer
         return ContactListSerializer
 
+class RegisterFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = Register
+        fields = {
+            "id": ["exact", "lt", "gt", "lte", "gte", "range"],
+            "last_name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "first_name": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "email": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "phone": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "phone_ext": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "mobile": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+            "vat_number": ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"],
+        }
 
 class RegisterViewSet(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = RegisterSerializer
-    filterset_fields = ["first_name", "last_name"]
+    filterset_class = RegisterFilter
     ordering_fields = ["first_name", "last_name"]
 
     @action(detail=False, methods=['post'], url_path='check-email')

@@ -96,10 +96,7 @@ const columns = [
       {
         type: 'required'
       }
-    ], 
-    editorOptions: {
-      onKeyPress: phoneNumberField
-    }
+    ]
   },
   {
     dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
