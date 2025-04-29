@@ -1,13 +1,15 @@
 <script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
 import {
-  DxDataGrid, DxEditing, DxForm,
-  DxItem, DxPopup, DxFilterRow
+  DxDataGrid, DxEditing,
+  DxFilterRow,
+  DxForm,
+  DxItem, DxPopup
 } from 'devextreme-vue/data-grid';
 import DxTabs from 'devextreme-vue/tabs';
-import { ref, defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
 
-import { emailPattern, phonePattern, phoneNumberField } from '@/utils/validation-patterns';
+import { emailPattern, phoneNumberField, phonePattern } from '@/utils/validation-patterns';
 
 let props = defineProps(["id"])
 
@@ -167,6 +169,40 @@ const columns = [
       }
     },
   },
+  // {
+  //   dataField: "postal_code", caption: "CAP", filterOperations: ['contains'],
+  //   lookup:
+  //   {
+  //     dataSource: (options) => ({
+  //     store: cities,
+  //     filter: options.data ? ['postcode', 'isnotnull', '']: null,
+  //   }),
+  //     valueExpr: "id",
+  //     displayExpr: "postcode",
+  //   },
+  //   editorOptions: {
+  //     searchEnabled: true,
+  //     showClearButton: true,
+  //   },
+  //   async setCellValue(rowData, value) {
+  //     rowData.postcode = value;
+  //     if (!value) return
+
+  //     if (!rowData.city) { // reverse cascading only if city is not selected
+  //       const selectedPostCode = await cities.byKey(value);
+  //       rowData.city = selectedPostCode.city;
+  //     }
+
+  //     if (!rowData.region) { // reverse cascading only if region is not selected
+  //       const selectedCity = await cities.byKey(value);
+  //       rowData.region = selectedCity.region;
+  //     }
+  //     if (!rowData.country) { // reverse cascading only if region is not selected
+  //       const selectedRegion = await regions.byKey(rowData.region);
+  //       rowData.country = selectedRegion.country;
+  //     }
+  //   },
+  // },
   {
     dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],
     validationRules: [
@@ -175,28 +211,49 @@ const columns = [
       }
     ]
   },
-] 
+]
 </script>
 
 <template>
   <div contacts v-if="selectedTab == 1">
-    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
-      @row-inserting="onRowInserting">
+    <DxDataGrid
+      :data-source="aaa"
+      :show-borders="true"
+      :remote-operations="true"
+      :columns="columns"
+      @row-inserting="onRowInserting"
+    >
       <dx-filter-row :visible="true" />
-      <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
+      <DxEditing
+        :allow-updating="true"
+        :allow-adding="true"
+        :allow-deleting="true"
+        mode="popup"
+      >
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>
-          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
+            caption="Informazioni"
+          >
             <DxItem data-field="sede" />
             <DxItem data-field="name" />
             <DxItem data-field="phone" />
             <DxItem data-field="phone_ext" />
             <DxItem data-field="email" />
           </DxItem>
-          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
+          <DxItem
+            :col-count="2"
+            :col-span="2"
+            item-type="group"
+            caption="Indirizzo"
+          >
             <DxItem data-field="country" />
             <DxItem data-field="region" />
             <DxItem data-field="city" />
+            <DxItem data-field="postal_code" />
             <DxItem data-field="address" />
           </DxItem>
         </DxForm>

@@ -17,7 +17,7 @@ class RegionSerializer(serializers.ModelSerializer):
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "name", "region"]
+        fields = ["id", "name", "region", "postcode"]
         model = City
 
 
