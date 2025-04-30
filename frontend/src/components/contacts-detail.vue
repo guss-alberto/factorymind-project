@@ -1,10 +1,12 @@
-I<script setup lang="js">
+I
+<script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
 import {
   DxDataGrid, DxEditing,
   DxFilterRow,
   DxForm,
-  DxItem, DxPopup
+  DxItem, DxPopup,
+  DxPager, DxPaging
 } from 'devextreme-vue/data-grid';
 import DxTabs from 'devextreme-vue/tabs';
 import { defineProps, ref } from 'vue';
@@ -56,7 +58,10 @@ const columns = [
       {
         type: 'required'
       }
-    ]
+    ], 
+    editorOptions: {
+      maxLength: 50,
+    }
   },
   {
     dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
@@ -95,7 +100,7 @@ const columns = [
       {
         type: 'required'
       }
-    ]
+    ],
   },
   {
     dataField: "country", caption: "Paese", allowFiltering: false,
@@ -112,7 +117,12 @@ const columns = [
       rowData.country = value
       rowData.region = null
       rowData.city = null
-    }
+    },
+    validationRules: [
+      {
+        type: 'required'
+      }
+    ],
   },
   {
     dataField: "region", caption: "Provincia/stato", allowFiltering: false,
@@ -120,7 +130,7 @@ const columns = [
       dataSource: (options) => ({
         store: regions,
         filter: options.data ? ['country', '=', options.data.country] : null,
-        paginate:true
+        paginate: true
       }),
       valueExpr: "id",
       displayExpr: e => `${e.code} - ${e.name}`,
@@ -139,6 +149,11 @@ const columns = [
         rowData.country = selectedRegion.country;
       }
     },
+    validationRules: [
+      {
+        type: 'required'
+      }
+    ],
   },
 
   {
@@ -146,21 +161,21 @@ const columns = [
     lookup:
     {
       dataSource: (options) => {
-      let filter = null
-      if (options.data?.region)
-        filter = ['region', '=', options.data.region]
-      else if (options.data?.country)
-        filter = ['region__country', '=', options.data.country]
-      return {
-        store: cities,
-        filter: filter,
-        paginate:true
-      }
-    },
+        let filter = null
+        if (options.data?.region)
+          filter = ['region', '=', options.data.region]
+        else if (options.data?.country)
+          filter = ['region__country', '=', options.data.country]
+        return {
+          store: cities,
+          filter: filter,
+          paginate: true
+        }
+      },
       valueExpr: "id",
       displayExpr: e => {
         if (e.postcode)
-          return `${e.name} - ${e.postcode}`
+          return `${e.postcode} - ${e.name}`
         return e.name
       },
     },
@@ -168,6 +183,11 @@ const columns = [
       searchEnabled: true,
       showClearButton: true,
     },
+    validationRules: [
+      {
+        type: 'required'
+      }
+    ],
     async setCellValue(rowData, value) {
       rowData.city = value;
       if (!value) return
@@ -188,7 +208,10 @@ const columns = [
       {
         type: 'required'
       }
-    ]
+    ],
+    editorOptions: {
+      maxLength: 50,
+    }
   },
 ]
 </script>
@@ -197,6 +220,8 @@ const columns = [
   <div contacts v-if="selectedTab == 1">
     <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
       @row-inserting="onRowInserting">
+      <DxPaging :enabled="true" />
+      <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="[2, 5, 10, 20]" />
       <dx-filter-row :visible="true" />
       <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />

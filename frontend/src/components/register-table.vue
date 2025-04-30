@@ -20,7 +20,6 @@ const columns = [
     {
         dataField: "first_name",
         caption: "Nome",
-        validationRules: [{ type: 'required' }]
     },
     {
         dataField: "phone",
@@ -98,9 +97,6 @@ const columns = [
                 pattern: vatPattern,
                 message: 'Inserisci una P.IVA valida (Es. IT12345678912)',
             },
-            { 
-            type: 'required' 
-        }
     ]
     },
 ]
@@ -116,11 +112,11 @@ const columns = [
             <ContactsDetail :id = "data.data.id"/>
         </template>
         <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
-            <DxPopup :show-title="true" title="Contatto" />
+            <DxPopup :show-title="true" title="Anagrafica" />
             <DxForm>
-                <DxItem :col-count="2" :col-span="2" item-type="group" caption="Nome">
-                    <DxItem data-field="first_name" />
+                <DxItem :col-count="2" :col-span="2" item-type="group" caption="Identificativo">
                     <DxItem data-field="last_name" />
+                    <DxItem data-field="first_name" />
                 </DxItem>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Contatti">
                     <DxItem data-field="phone" />
