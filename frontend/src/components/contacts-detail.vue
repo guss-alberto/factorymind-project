@@ -31,6 +31,20 @@ const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
 
+function onEditorPreparing(e) {
+    if (e.parentType === 'dataRow' && e.dataField === 'city') {
+      e.editorOptions.onSelectionChanged = (selectionEvent) => {
+        const region = selectionEvent.selectedItem.region;
+        if (region && e.component) {
+          // Set the region value (already handled), now also set the 'country'
+          const grid = e.component;
+          const rowIndex = e.row.rowIndex;
+          grid.cellValue(rowIndex, 'country', region.country);
+        }
+      };
+    }
+  }
+
 const columns = [
   {
     dataField: "sede", caption: "Nome sede", filterOperations: ['contains'],
@@ -118,31 +132,19 @@ const columns = [
   },
   {
     dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'],
-    editorType: 'dxAutocomplete', 
+    editorType: 'dxAutocomplete',
     editorOptions: {
       minSearchLength: 0,
-      showClearButton: true, 
+      showClearButton: true,
       dataSource: {
         store: regions,
         filter: (options) => {
-          return options.data ? ['country', '=', options.data.country]    : null;
+          return options.data ? ['country', '=', options.data.country] : null;
         },
-        paginate: true 
+        paginate: true
       },
-      valueExpr: 'name', 
-      
-      // Cascading
-      async  onSelectionChanged (e) {
-        console.log(e)
-        if (e.selectedItem){
-          const selectedCountry = await countries.byKey(e.selectedItem.country);
-          const form = e.component.option('form');
-              form.updateData({
-                country: selectedCountry.id
-              });
+      valueExpr: 'name',
 
-        }
-      },
     },
   },
 
@@ -189,7 +191,7 @@ const columns = [
 <template>
   <div contacts v-if="selectedTab == 1">
     <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
-      @row-inserting="onRowInserting">
+      @row-inserting="onRowInserting" @editor-preparing="onEditorPreparing">
       <dx-filter-row :visible="true" />
       <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />
