@@ -51,17 +51,17 @@ class CityFilter(django_filters.FilterSet):
 
     class Meta:
         model = City
-        fields = ["region"]
+        fields = ["region", "region__country"]
 
     def filter_search(self, queryset, name, value):
-        return queryset.filter( name__icontains=value )
+        return queryset.filter( Q(name__icontains=value) | Q(postcode__startswith=value) )
 
 
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     filterset_class = CityFilter
-    search_fields = ["name"]
+    pagination_class = StandardPagination
 
 
 
@@ -79,9 +79,9 @@ class CountryFilter(django_filters.FilterSet):
     
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
+    pagination_class = StandardPagination
     serializer_class = CountrySerializer
     filterset_class = CountryFilter
-    search_fields = ["name"]
     ordering_fields = ["code", "name"]
 
 
@@ -108,6 +108,8 @@ class ContactsFilter(django_filters.FilterSet):
             "phone": search_operations,
             "phone_ext": search_operations,
             "address": search_operations,
+            "country__name": search_operations,
+            "country": ["exact"],
         }
 
 
@@ -144,7 +146,8 @@ class RegisterViewSet(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = RegisterSerializer
     filterset_class = RegisterFilter
-    ordering_fields = ["first_name", "last_name"]
+    ordering_fields = ["first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number"]
+    pagination_class = StandardPagination
 
     @action(detail=False, methods=['post'], url_path='check-email')
     def check_email(self, request):

@@ -31,9 +31,6 @@ const columns = [
                 pattern: phonePattern,
                 message: 'Il telefono deve contenere solo numeri con un "+" opzionale all\'inizio'
             },
-            {
-                type: 'required'
-            }
         ],
         editorOptions: {
             onKeyPress: phoneNumberField
@@ -127,6 +124,7 @@ const columns = [
                 </DxItem>
                 <DxItem :col-count="2" :col-span="2" item-type="group" caption="Contatti">
                     <DxItem data-field="phone" />
+                    <DxItem data-field="phone_ext" />
                     <DxItem data-field="mobile" />
                     <DxItem data-field="email" />
                     <DxItem data-field="vat_number" />

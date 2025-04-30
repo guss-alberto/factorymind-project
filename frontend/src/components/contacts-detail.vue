@@ -1,4 +1,4 @@
-<script setup lang="js">
+I<script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
 import {
   DxDataGrid, DxEditing,
@@ -34,7 +34,7 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
 const columns = [
   {
-    dataField: "sede", caption: "Nome sede", filterOperations: ['contains'],
+    dataField: "sede", caption: "Nome sede", allowFiltering: false,
     validationRules: [
       {
         type: 'required'
@@ -98,7 +98,8 @@ const columns = [
     ]
   },
   {
-    dataField: "country", caption: "Paese", filterOperations: ['contains'], lookup: {
+    dataField: "country", caption: "Paese", allowFiltering: false,
+    lookup: {
       dataSource: countries,
       valueExpr: "iso_code",
       displayExpr: e => `${e.iso_code} - ${e.name}`,
@@ -107,7 +108,6 @@ const columns = [
       showClearButton: true,
       searchEnabled: true,
     },
-
     async setCellValue(rowData, value) {
       rowData.country = value
       rowData.region = null
@@ -115,11 +115,12 @@ const columns = [
     }
   },
   {
-    dataField: "region", caption: "Provincia/stato", filterOperations: ['contains'],
+    dataField: "region", caption: "Provincia/stato", allowFiltering: false,
     lookup: {
       dataSource: (options) => ({
         store: regions,
         filter: options.data ? ['country', '=', options.data.country] : null,
+        paginate:true
       }),
       valueExpr: "id",
       displayExpr: e => `${e.code} - ${e.name}`,
@@ -141,15 +142,27 @@ const columns = [
   },
 
   {
-    dataField: "city", caption: "Comune", filterOperations: ['contains'],
+    dataField: "city", caption: "Comune", allowFiltering: false,
     lookup:
     {
-      dataSource: (options) => ({
+      dataSource: (options) => {
+      let filter = null
+      if (options.data?.region)
+        filter = ['region', '=', options.data.region]
+      else if (options.data?.country)
+        filter = ['region__country', '=', options.data.country]
+      return {
         store: cities,
-        filter: options.data ? ['region', '=', options.data.region] : null,
-      }),
+        filter: filter,
+        paginate:true
+      }
+    },
       valueExpr: "id",
-      displayExpr: "name",
+      displayExpr: e => {
+        if (e.postcode)
+          return `${e.name} - ${e.postcode}`
+        return e.name
+      },
     },
     editorOptions: {
       searchEnabled: true,
@@ -169,40 +182,6 @@ const columns = [
       }
     },
   },
-  // {
-  //   dataField: "postal_code", caption: "CAP", filterOperations: ['contains'],
-  //   lookup:
-  //   {
-  //     dataSource: (options) => ({
-  //     store: cities,
-  //     filter: options.data ? ['postcode', 'isnotnull', '']: null,
-  //   }),
-  //     valueExpr: "id",
-  //     displayExpr: "postcode",
-  //   },
-  //   editorOptions: {
-  //     searchEnabled: true,
-  //     showClearButton: true,
-  //   },
-  //   async setCellValue(rowData, value) {
-  //     rowData.postcode = value;
-  //     if (!value) return
-
-  //     if (!rowData.city) { // reverse cascading only if city is not selected
-  //       const selectedPostCode = await cities.byKey(value);
-  //       rowData.city = selectedPostCode.city;
-  //     }
-
-  //     if (!rowData.region) { // reverse cascading only if region is not selected
-  //       const selectedCity = await cities.byKey(value);
-  //       rowData.region = selectedCity.region;
-  //     }
-  //     if (!rowData.country) { // reverse cascading only if region is not selected
-  //       const selectedRegion = await regions.byKey(rowData.region);
-  //       rowData.country = selectedRegion.country;
-  //     }
-  //   },
-  // },
   {
     dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],
     validationRules: [
@@ -216,44 +195,23 @@ const columns = [
 
 <template>
   <div contacts v-if="selectedTab == 1">
-    <DxDataGrid
-      :data-source="aaa"
-      :show-borders="true"
-      :remote-operations="true"
-      :columns="columns"
-      @row-inserting="onRowInserting"
-    >
+    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
+      @row-inserting="onRowInserting">
       <dx-filter-row :visible="true" />
-      <DxEditing
-        :allow-updating="true"
-        :allow-adding="true"
-        :allow-deleting="true"
-        mode="popup"
-      >
+      <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>
-          <DxItem
-            :col-count="2"
-            :col-span="2"
-            item-type="group"
-            caption="Informazioni"
-          >
+          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
             <DxItem data-field="sede" />
             <DxItem data-field="name" />
             <DxItem data-field="phone" />
             <DxItem data-field="phone_ext" />
             <DxItem data-field="email" />
           </DxItem>
-          <DxItem
-            :col-count="2"
-            :col-span="2"
-            item-type="group"
-            caption="Indirizzo"
-          >
+          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
             <DxItem data-field="country" />
             <DxItem data-field="region" />
             <DxItem data-field="city" />
-            <DxItem data-field="postal_code" />
             <DxItem data-field="address" />
           </DxItem>
         </DxForm>
