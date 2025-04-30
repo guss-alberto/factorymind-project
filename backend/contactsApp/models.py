@@ -11,7 +11,7 @@ class Country(models.Model):
 
     class Meta:
         verbose_name_plural = "Countries"
-        ordering = ["name"]  # Ordina di default per nome
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.iso_code} - {self.name}"
@@ -24,16 +24,16 @@ class Region(models.Model):
 
     country = models.ForeignKey(
         Country,
-        on_delete=models.CASCADE,  # Se cancello la nazione, cancello le sue regioni
+        on_delete=models.CASCADE,
     )
     code = models.CharField(
         max_length=10,
-        blank=True,  # Potrebbe non essere sempre presente
+        blank=True,  
     )
     name = models.CharField(max_length=50)
 
     class Meta:
-        ordering = ["name"]  # Ordina per nome
+        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name} ({self.country.iso_code})"
@@ -52,8 +52,7 @@ class City(models.Model):
     postcode = models.CharField(max_length=10, null=True)
 
     class Meta:
-        verbose_name_plural = "Cities"
-        ordering = ["region", "name"]  # Ordina per regione e poi per nome
+        ordering = ["region", "name"]
 
     def __str__(self):
         return f"{self.name} ({self.postcode})"
@@ -72,7 +71,6 @@ class Sede(models.Model):
     name = models.CharField(max_length=100)
 
     class Meta:
-        verbose_name_plural = "Sedi"
         ordering = ["name"]
 
     def __str__(self):
@@ -100,7 +98,7 @@ class Contact(models.Model):
     register = models.ForeignKey(Register, on_delete=models.CASCADE, related_name='contacts')
     sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
-    phone = models.CharField(max_length=20, null=True)
+    phone = models.CharField(max_length=20)
     phone_ext = models.CharField(max_length=20, null=True)
     email = models.EmailField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE)

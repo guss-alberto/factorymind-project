@@ -16,7 +16,6 @@ import { emailPattern, phoneNumberField, phonePattern } from '@/utils/validation
 let props = defineProps(["id"])
 
 let selectedTab = ref(1)
-/* eslint-disable */
 
 const contacts = djangoStore("http://localhost:8000/api/contacts/contacts")
 const aaa = {
@@ -75,7 +74,8 @@ const columns = [
       }
     ],
     editorOptions: {
-      onKeyPress: phoneNumberField
+      onKeyPress: phoneNumberField,
+      maxLength: 20,
     }
   },
   {
@@ -87,7 +87,8 @@ const columns = [
       },
     ],
     editorOptions: {
-      onKeyPress: phoneNumberField
+      onKeyPress: phoneNumberField,
+      maxLength: 20,
     }
   },
   {

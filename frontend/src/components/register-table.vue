@@ -7,19 +7,23 @@ import axios from 'axios';
 import { phonePattern, emailPattern, phoneNumberField, vatPattern } from '@/utils/validation-patterns';
 import ContactsDetail from './contacts-detail.vue';
 
-/* eslint-disable */
-
 const store = djangoStore("http://localhost:8000/api/contacts/register")
 
 const columns = [
-{
+    {
         dataField: "last_name",
         caption: "Cognome",
-        validationRules: [{ type: 'required' }]
+        validationRules: [{ type: 'required' }],
+        editorOptions: {
+            maxLength: 50,
+        }
     },
     {
         dataField: "first_name",
         caption: "Nome",
+        editorOptions: {
+            maxLength: 50,
+        }
     },
     {
         dataField: "phone",
@@ -32,7 +36,8 @@ const columns = [
             },
         ],
         editorOptions: {
-            onKeyPress: phoneNumberField
+            onKeyPress: phoneNumberField,
+            maxLength: 20,
         }
     },
     {
@@ -46,7 +51,8 @@ const columns = [
             },
         ],
         editorOptions: {
-            onKeyPress: phoneNumberField
+            onKeyPress: phoneNumberField,
+            maxLength: 20,
         }
     },
     {
@@ -60,7 +66,8 @@ const columns = [
             },
         ],
         editorOptions: {
-            onKeyPress: phoneNumberField
+            onKeyPress: phoneNumberField,
+            maxLength: 20,
         }
     },
     {
@@ -77,9 +84,9 @@ const columns = [
                 validationCallback: async ({ value, data }) => {
                     const response = await axios.post("http://localhost:8000/api/contacts/register/check-email/", {
                         email: value,
-                        id: data ? data.id : null // Includi l'ID per escludere il record corrente durante l'update
+                        id: data ? data.id : null // includi id per escludere il record corrente durante l'update
                     });
-                    return response.data.available; // L'API resituisce { available: true/false }
+                    return response.data.available; // API resituisce { available: true/false }
                 },
                 message: 'Indirizzo email già registrato'
             },
@@ -93,11 +100,14 @@ const columns = [
         caption: "P.IVA",
         validationRules: [
             {
-                type : 'pattern',
+                type: 'pattern',
                 pattern: vatPattern,
                 message: 'Inserisci una P.IVA valida (Es. IT12345678912)',
             },
-    ]
+        ],
+        editorOptions: {
+            maxLength: 20,
+        }
     },
 ]
 </script>
@@ -109,7 +119,7 @@ const columns = [
         <dx-filter-row :visible="true" />
         <DxMasterDetail :enabled="true" template="masterDetailTemplate" />
         <template #masterDetailTemplate="{ data }">
-            <ContactsDetail :id = "data.data.id"/>
+            <ContactsDetail :id="data.data.id" />
         </template>
         <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
             <DxPopup :show-title="true" title="Anagrafica" />

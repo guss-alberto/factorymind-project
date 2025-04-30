@@ -26,19 +26,6 @@ class SedeSerializer(serializers.ModelSerializer):
         fields = ["id", "code", "name"]
         model = Sede
 
-class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Register
-        fields = [
-            "id",
-            "last_name",
-            "first_name",
-            "phone",
-            "phone_ext",
-            "mobile",
-            "email",
-            "vat_number",
-        ]
 
 # visualizzare
 class ContactListSerializer(serializers.ModelSerializer):
