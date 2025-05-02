@@ -134,7 +134,11 @@ const columns = [
         paginate: true
       }),
       valueExpr: "id",
-      displayExpr: e => `${e.code} - ${e.name}`,
+      displayExpr: e => {
+        if (e.code)
+          return `${e.code} - ${e.name}`
+        return e.name
+      },
     },
     editorOptions: {
       searchEnabled: true,

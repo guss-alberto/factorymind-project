@@ -22,14 +22,8 @@ class Region(models.Model):
     Modello per rappresentare le Regioni/Stati/Province all'interno di una Nazione.
     """
 
-    country = models.ForeignKey(
-        Country,
-        on_delete=models.CASCADE,
-    )
-    code = models.CharField(
-        max_length=10,
-        blank=True,  
-    )
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    code = models.CharField(max_length=10, null=True)
     name = models.CharField(max_length=50)
 
     class Meta:
@@ -44,10 +38,7 @@ class City(models.Model):
     Modello per rappresentare le Città/Comuni all'interno di una Regione.
     """
 
-    region = models.ForeignKey(
-        Region,
-        on_delete=models.CASCADE,
-    )
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
     name = models.CharField(max_length=10)
     postcode = models.CharField(max_length=10, null=True)
 
@@ -95,7 +86,9 @@ class Register(models.Model):
 
 
 class Contact(models.Model):
-    register = models.ForeignKey(Register, on_delete=models.CASCADE, related_name='contacts')
+    register = models.ForeignKey(
+        Register, on_delete=models.CASCADE, related_name="contacts"
+    )
     sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
     phone = models.CharField(max_length=20)
