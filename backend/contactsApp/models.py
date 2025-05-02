@@ -71,12 +71,12 @@ class Sede(models.Model):
 class Register(models.Model):
     # Campi per l'anagrafica
     last_name = models.CharField(max_length=50)
-    first_name = models.CharField(max_length=50, null=True)
-    phone = models.CharField(max_length=20, null=True)
-    phone_ext = models.CharField(max_length=20, null=True)
-    mobile = models.CharField(max_length=20, null=True)
+    first_name = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    phone_ext = models.CharField(max_length=20, null=True, blank=True)
+    mobile = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField()
-    vat_number = models.CharField(max_length=20, null=True)
+    vat_number = models.CharField(max_length=20, null=True, blank=True)
 
     class Meta:
         ordering = ["last_name", "first_name"]
@@ -92,7 +92,7 @@ class Contact(models.Model):
     sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
     phone = models.CharField(max_length=20)
-    phone_ext = models.CharField(max_length=20, null=True)
+    phone_ext = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
