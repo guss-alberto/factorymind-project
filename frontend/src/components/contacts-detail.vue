@@ -108,7 +108,7 @@ const columns = [
     dataField: "country", caption: "Paese", allowFiltering: false,
     lookup: {
       dataSource: countries,
-      valueExpr: "iso_code",
+      valueExpr: "id",
       displayExpr: e => `${e.iso_code} - ${e.name}`,
     },
     editorOptions: {

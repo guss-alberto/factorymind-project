@@ -20,7 +20,7 @@ class Country(NameCodeEntity):
     Models to represent Nations
     """
 
-    iso_code = models.CharField(max_length=3, primary_key=True)
+    iso_code = models.CharField(max_length=3, unique=True)
 
     class Meta(NameCodeEntity.Meta):
         verbose_name_plural = "Countries"

@@ -5,7 +5,7 @@ from .models import City, Contact, Country, Region, Register, Branch
 
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["iso_code", "name"]
+        fields = ["id", "iso_code", "name"]
         model = Country
 
 

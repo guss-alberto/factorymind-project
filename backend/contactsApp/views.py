@@ -18,9 +18,6 @@ from .serializer import (
 )
 
 
-
-
-
 class RegionFilter(django_filters.FilterSet):
     _search = django_filters.CharFilter(method='filter_search')
 
