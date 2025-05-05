@@ -32,6 +32,9 @@ class Command(BaseCommand):
                         name=country_name,
                     )
 
+                    if not province:
+                        province = "N/A"
+
                     region, _ = Region.objects.get_or_create(
                         name=province,
                         country=country,

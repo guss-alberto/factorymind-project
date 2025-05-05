@@ -133,7 +133,7 @@ const columns = [
       dataSource: (options) => ({
         store: regions,
         filter: options.data ? ['country', '=', options.data.country] : null,
-        paginate: true
+        paginate: true  
       }),
       valueExpr: "id",
       displayExpr: e => {
