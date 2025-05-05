@@ -15,7 +15,7 @@ import { emailPattern, phoneNumberField, phonePattern } from '@/utils/validation
 
 let props = defineProps(["id"])
 
-let selectedTab = ref(1)
+let selectedTab = ref(0)
 
 const contacts = djangoStore("http://localhost:8000/api/contacts/contacts")
 const aaa = {
@@ -27,7 +27,7 @@ function onRowInserting(e) {
 }
 
 
-const sedi = djangoStore("http://localhost:8000/api/contacts/sedi")
+const branches = djangoStore("http://localhost:8000/api/contacts/branches")
 const cities = djangoStore("http://localhost:8000/api/contacts/cities")
 const countries = djangoStore("http://localhost:8000/api/contacts/countries")
 const regions = djangoStore("http://localhost:8000/api/contacts/regions")
@@ -35,18 +35,19 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions")
 
 const columns = [
   {
-    dataField: "sede", caption: "Nome sede", allowFiltering: false,
+    dataField: "branch", caption: "Nome sede", allowFiltering: false,
     validationRules: [
       {
         type: 'required'
       }
     ],
     lookup: {
-      dataSource: sedi,
+      dataSource: branches,
       valueExpr: "id",
       displayExpr: e => `${e.code} - ${e.name}`,
     },
     editorOptions: {
+      showClearButton: true,
       searchEnabled: true,
     },
   },
@@ -118,6 +119,7 @@ const columns = [
       rowData.country = value
       rowData.region = null
       rowData.city = null
+      rowData.address = null
     },
     validationRules: [
       {
@@ -147,6 +149,7 @@ const columns = [
     async setCellValue(rowData, value) {
       rowData.region = value
       rowData.city = null
+      rowData.address = null
       if (!value) return
 
       if (!rowData.country) { // reverse cascading only if region is not selected
@@ -195,6 +198,7 @@ const columns = [
     ],
     async setCellValue(rowData, value) {
       rowData.city = value;
+      rowData.address = null
       if (!value) return
 
       if (!rowData.region) { // reverse cascading only if region is not selected
@@ -222,7 +226,7 @@ const columns = [
 </script>
 
 <template>
-  <div contacts v-if="selectedTab == 1">
+  <div contacts v-if="selectedTab == 0">
     <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
       @row-inserting="onRowInserting">
       <DxPaging :enabled="true" />
@@ -232,7 +236,7 @@ const columns = [
         <DxPopup :show-title="true" title="Contatto" />
         <DxForm>
           <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
-            <DxItem data-field="sede" />
+            <DxItem data-field="branch" />
             <DxItem data-field="name" />
             <DxItem data-field="phone" />
             <DxItem data-field="phone_ext" />
@@ -249,8 +253,8 @@ const columns = [
     </DxDataGrid>
   </div>
   <DxTabs v-model:selected-index="selectedTab">
-    <DxItem text="Profiles" />
     <DxItem text="Contacts" />
+    <DxItem text="Profiles" />
     <DxItem text="Privacy" />
   </DxTabs>
 </template>

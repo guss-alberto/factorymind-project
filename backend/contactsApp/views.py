@@ -18,9 +18,7 @@ from .serializer import (
 )
 
 
-class StandardPagination(LimitOffsetPagination):
-    page_size = 10
-    max_page_size = 100
+
 
 
 class RegionFilter(django_filters.FilterSet):
@@ -33,7 +31,7 @@ class RegionFilter(django_filters.FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.filter(
             Q(name__icontains=value) | Q(code__icontains=value)
-        )
+        ).order_by("name")
 
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
@@ -41,7 +39,6 @@ class RegionViewSet(viewsets.ModelViewSet):
     filterset_class = RegionFilter
     search_fields = ["name"]
     ordering_fields = ["code", "name"]
-    pagination_class = StandardPagination
 
 
 class CityFilter(django_filters.FilterSet):
@@ -52,14 +49,13 @@ class CityFilter(django_filters.FilterSet):
         fields = ["region", "region__country"]
 
     def filter_search(self, queryset, name, value):
-        return queryset.filter( Q(name__icontains=value) | Q(postcode__startswith=value) )
+        return queryset.filter( Q(name__icontains=value) | Q(postcode__startswith=value) ).order_by("name")
 
 
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     filterset_class = CityFilter
-    pagination_class = StandardPagination
 
 
 
@@ -73,21 +69,33 @@ class CountryFilter(django_filters.FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.filter(
             Q(name__icontains=value) | Q(iso_code__icontains=value)
-        )
+        ).order_by("name")
     
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
-    pagination_class = StandardPagination
     serializer_class = CountrySerializer
     filterset_class = CountryFilter
     ordering_fields = ["code", "name"]
 
+class BranchFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method='filter_search')
+
+    class Meta:
+        model = Branch
+        fields = ["code"]
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) | Q(code__icontains=value)
+        ).order_by("name")
 
 class BranchViewSet(viewsets.ModelViewSet):
+    
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
-    filterset_fields = ["code", "name"]
+    filterset_class = BranchFilter
     ordering_fields = ["code", "name"]
+    
 
 search_operations = ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"]
 
@@ -110,7 +118,6 @@ class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
 
     filterset_class = ContactsFilter
-    pagination_class = StandardPagination
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
@@ -139,7 +146,6 @@ class RegisterViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     filterset_class = RegisterFilter
     ordering_fields = ["first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number"]
-    pagination_class = StandardPagination
 
     @action(detail=False, methods=['post'], url_path='check-email')
     def check_email(self, request):

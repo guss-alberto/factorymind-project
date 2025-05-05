@@ -1,33 +1,41 @@
 from django.db import models
 
 
-class Country(models.Model):
+class NameCodeEntity(models.Model):
+    """
+    Abstract model for entities with a name and optional code
+    """
+    name = models.CharField(max_length=50)
+    code = models.CharField(max_length=20, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+class Country(NameCodeEntity):
     """
     Models to represent Nations
     """
 
     iso_code = models.CharField(max_length=3, primary_key=True)
-    name = models.CharField(max_length=50)
 
-    class Meta:
+    class Meta(NameCodeEntity.Meta):
         verbose_name_plural = "Countries"
-        ordering = ["name"]
+
 
     def __str__(self):
         return f"{self.iso_code} - {self.name}"
 
 
-class Region(models.Model):
+class Region(NameCodeEntity):
     """
     Model to represent Regions/States/Provinces within a Nation
     """
 
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    code = models.CharField(max_length=10, null=True)
-    name = models.CharField(max_length=50)
-
-    class Meta:
-        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name} ({self.country.iso_code})"
@@ -52,23 +60,17 @@ class City(models.Model):
 # Models for Personal/Contact Information
 # ===========================
 
-class Branch(models.Model):
+class Branch(NameCodeEntity):
     """
     Model to represent Offices/Branches of an organization
     """
-
-    code = models.CharField(max_length=20)
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        ordering = ["name"]
 
     def __str__(self):
         return f"{self.name}"
 
 
 class Register(models.Model):
-    # Campi per l'anagrafica
+    # Fields for Registry
     last_name = models.CharField(max_length=50)
     first_name = models.CharField(max_length=50, null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
