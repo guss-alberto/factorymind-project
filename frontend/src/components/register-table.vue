@@ -84,9 +84,9 @@ const columns = [
                 validationCallback: async ({ value, data }) => {
                     const response = await axios.post("http://localhost:8000/api/contacts/register/check-email/", {
                         email: value,
-                        id: data ? data.id : null // includi id per escludere il record corrente durante l'update
+                        id: data ? data.id : null // include id to exclude current record during update
                     });
-                    return response.data.available; // API resituisce { available: true/false }
+                    return response.data.available; // API return { available: true/false }
                 },
                 message: 'Indirizzo email già registrato'
             },

@@ -7,7 +7,7 @@ from .views import (
                     ContactViewSet,
                     CountryViewSet,
                     RegionViewSet,
-                    SedeViewSet,
+                    BranchViewSet,
                     RegisterViewSet,
 )
 
@@ -15,7 +15,7 @@ router = DefaultRouter()
 router.register(r"countries", CountryViewSet)
 router.register(r"regions", RegionViewSet)
 router.register(r"cities", CityViewSet)
-router.register(r"sedi", SedeViewSet)
+router.register(r"branches", BranchViewSet)
 router.register(r"contacts", ContactViewSet)
 router.register(r"register", RegisterViewSet)
 

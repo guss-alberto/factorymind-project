@@ -3,7 +3,7 @@ from django.db import models
 
 class Country(models.Model):
     """
-    Modello per rappresentare le Nazioni.
+    Models to represent Nations
     """
 
     iso_code = models.CharField(max_length=3, primary_key=True)
@@ -19,7 +19,7 @@ class Country(models.Model):
 
 class Region(models.Model):
     """
-    Modello per rappresentare le Regioni/Stati/Province all'interno di una Nazione.
+    Model to represent Regions/States/Provinces within a Nation
     """
 
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -35,7 +35,7 @@ class Region(models.Model):
 
 class City(models.Model):
     """
-    Modello per rappresentare le Città/Comuni all'interno di una Regione.
+    Model to represent Cities within a Region
     """
 
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
@@ -49,13 +49,12 @@ class City(models.Model):
         return f"{self.name} ({self.postcode})"
 
 
-# Modelli Anagrafica/Contatti
+# Models for Personal/Contact Information
 # ===========================
 
-
-class Sede(models.Model):
+class Branch(models.Model):
     """
-    Modello per rappresentare le Sedi/Filiali di un'organizzazione.
+    Model to represent Offices/Branches of an organization
     """
 
     code = models.CharField(max_length=20)
@@ -89,7 +88,7 @@ class Contact(models.Model):
     register = models.ForeignKey(
         Register, on_delete=models.CASCADE, related_name="contacts"
     )
-    sede = models.ForeignKey(Sede, on_delete=models.CASCADE)
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, verbose_name="Ragione sociale")
     phone = models.CharField(max_length=20)
     phone_ext = models.CharField(max_length=20, null=True, blank=True)

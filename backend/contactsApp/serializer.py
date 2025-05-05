@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Contact, Country, Region, Register, Sede
+from .models import City, Contact, Country, Region, Register, Branch
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -21,15 +21,15 @@ class CitySerializer(serializers.ModelSerializer):
         model = City
 
 
-class SedeSerializer(serializers.ModelSerializer):
+class BranchSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ["id", "code", "name"]
-        model = Sede
+        model = Branch
 
 
 # visualizzare
 class ContactListSerializer(serializers.ModelSerializer):
-    sede = serializers.PrimaryKeyRelatedField(read_only=True)
+    branch = serializers.PrimaryKeyRelatedField(read_only=True)
     country = serializers.PrimaryKeyRelatedField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(read_only=True)
     region = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -37,7 +37,7 @@ class ContactListSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             "id",
-            "sede",
+            "branch",
             "register",
             "name",
 			"phone",
@@ -54,7 +54,7 @@ class ContactListSerializer(serializers.ModelSerializer):
 # inserimento
 class ContactSerializer(serializers.ModelSerializer):
     register = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
-    sede = serializers.PrimaryKeyRelatedField(queryset=Sede.objects.all())
+    branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
     country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all())
     region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
@@ -64,7 +64,7 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "register",
-            "sede",
+            "branch",
             "name",
             "phone",
             "phone_ext",

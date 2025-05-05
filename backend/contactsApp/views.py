@@ -6,14 +6,14 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from rest_framework.pagination import LimitOffsetPagination
-from .models import City, Contact, Country, Region, Sede, Register
+from .models import City, Contact, Country, Region, Branch, Register
 from .serializer import (
     CitySerializer,
     ContactListSerializer,
     ContactSerializer,
     CountrySerializer,
     RegionSerializer,
-    SedeSerializer,
+    BranchSerializer,
     RegisterSerializer,
 )
 
@@ -83,9 +83,9 @@ class CountryViewSet(viewsets.ModelViewSet):
     ordering_fields = ["code", "name"]
 
 
-class SedeViewSet(viewsets.ModelViewSet):
-    queryset = Sede.objects.all()
-    serializer_class = SedeSerializer
+class BranchViewSet(viewsets.ModelViewSet):
+    queryset = Branch.objects.all()
+    serializer_class = BranchSerializer
     filterset_fields = ["code", "name"]
     ordering_fields = ["code", "name"]
 
