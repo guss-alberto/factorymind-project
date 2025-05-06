@@ -28,7 +28,7 @@ class RegionFilter(django_filters.FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.filter(
             Q(name__icontains=value) | Q(code__icontains=value)
-        ).exclude(name="N/A").order_by("name")
+        ).order_by("name")
 
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
