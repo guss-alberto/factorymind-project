@@ -2,259 +2,230 @@ I
 <script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
 import {
-  DxDataGrid, DxEditing,
-  DxFilterRow,
-  DxForm,
-  DxItem, DxPopup,
-  DxPager, DxPaging
+  DxDataGrid
 } from 'devextreme-vue/data-grid';
-import DxTabs from 'devextreme-vue/tabs';
-import { defineProps, ref } from 'vue';
 
+import { defineProps, ref } from 'vue';
 import { emailPattern, phoneNumberField, phonePattern } from '@/utils/validation-patterns';
 
-let props = defineProps(["id"])
+const props = defineProps(["id"]);
 
-let selectedTab = ref(0)
+const contacts = djangoStore("http://localhost:8000/api/contacts/contacts");
+const branches = djangoStore("http://localhost:8000/api/contacts/branches");
+const cities = djangoStore("http://localhost:8000/api/contacts/cities");
+const countries = djangoStore("http://localhost:8000/api/contacts/countries");
+const regions = djangoStore("http://localhost:8000/api/contacts/regions");
 
-const contacts = djangoStore("http://localhost:8000/api/contacts/contacts")
-const aaa = {
-  store: contacts,
-  filter: ["register", "=", props.id],
-}
+// Function to automatically assign the register ID when adding a row
 function onRowInserting(e) {
-  e.data.register = props.id
+  e.data.register = props.id;
 }
 
-
-const branches = djangoStore("http://localhost:8000/api/contacts/branches")
-const cities = djangoStore("http://localhost:8000/api/contacts/cities")
-const countries = djangoStore("http://localhost:8000/api/contacts/countries")
-const regions = djangoStore("http://localhost:8000/api/contacts/regions")
-
-
-const columns = [
-  {
-    dataField: "branch", caption: "Nome sede", allowFiltering: false,
-    validationRules: [
-      {
-        type: 'required'
-      }
-    ],
-    lookup: {
-      dataSource: branches,
-      valueExpr: "id",
-      displayExpr: e => `${e.code} - ${e.name}`,
-    },
-    editorOptions: {
-      showClearButton: true,
-      searchEnabled: true,
-    },
+const gridConfig = ref({
+  dataSource: {
+    store: contacts,
+    filter: ["register", "=", props.id],
   },
-  {
-    dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'],
-    validationRules: [
+  remoteOperations: true,
+  keyExpr: "id",
 
-      {
-        type: 'required'
-      }
-    ], 
-    editorOptions: {
-      maxLength: 50,
+  paging: { enabled: true },
+  pager: {
+    visible: true,
+    showPageSizeSelector: true,
+    allowedPageSizes: [2, 5, 10, 20],
+  },
+  filterRow: { visible: true },
+  onRowInserting,
+
+  editing: {
+    allowUpdating: true,
+    allowAdding: true,
+    allowDeleting: true,
+    mode: "popup",
+    popup: {
+      showTitle: true,
+      title: "Contatto",
+    },
+    form: {
+      items: [
+        {
+          itemType: "group",
+          caption: "Informazioni",
+          colCount: 2,
+          colSpan: 2,
+          items: ["branch", "name", "phone", "phone_ext", "email"],
+        },
+        {
+          itemType: "group",
+          caption: "Indirizzo",
+          colCount: 2,
+          colSpan: 2,
+          items: ["country", "region", "city", "address"],
+        },
+      ]
     }
   },
-  {
-    dataField: "phone", caption: "Telefono", filterOperations: ['contains'], validationRules: [
-      {
-        type: 'pattern',
-        pattern: phonePattern,
-        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-      },
-      {
-        type: 'required'
-      }
-    ],
-    editorOptions: {
-      onKeyPress: phoneNumberField,
-      maxLength: 20,
-    }
-  },
-  {
-    dataField: "phone_ext", caption: "Telefono agg.", filterOperations: ['contains'], validationRules: [
-      {
-        type: 'pattern',
-        pattern: phonePattern,
-        message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
-      },
-    ],
-    editorOptions: {
-      onKeyPress: phoneNumberField,
-      maxLength: 20,
-    }
-  },
-  {
-    dataField: "email", caption: "E-mail", filterOperations: ['contains'], validationRules: [
-      {
-        type: 'pattern',
-        pattern: emailPattern,
-        message: 'Inserisci un indirizzo email valido',
-      },
-      {
-        type: 'required'
-      }
-    ],
-  },
-  {
-    dataField: "country", caption: "Paese", allowFiltering: false,
-    lookup: {
-      dataSource: countries,
-      valueExpr: "id",
-      displayExpr: e => `${e.iso_code} - ${e.name}`,
-    },
-    editorOptions: {
-      showClearButton: true,
-      searchEnabled: true,
-    },
-    async setCellValue(rowData, value) {
-      rowData.country = value
-      rowData.region = null
-      rowData.city = null
-      rowData.address = null
-    },
-    validationRules: [
-      {
-        type: 'required'
-      }
-    ],
-  },
-  {
-    dataField: "region", caption: "Provincia/stato", allowFiltering: false,
-    lookup: {
-      dataSource: (options) => ({
-        store: regions,
-        filter: options.data ? ['country', '=', options.data.country] : null,
-        paginate: true  
-      }),
-      valueExpr: "id",
-      displayExpr: e => {
-        if (e.code)
-          return `${e.code} - ${e.name}`
-        return e.name
-      },
-    },
-    editorOptions: {
-      searchEnabled: true,
-      showClearButton: true,
-    },
-    async setCellValue(rowData, value) {
-      rowData.region = value
-      rowData.city = null
-      rowData.address = null
-      if (!value) return
 
-      if (!rowData.country) { // reverse cascading only if region is not selected
-        const selectedRegion = await regions.byKey(value);
-        rowData.country = selectedRegion.country;
-      }
-    },
-    validationRules: [
-      {
-        type: 'required'
-      }
-    ],
-  },
-
-  {
-    dataField: "city", caption: "Comune", allowFiltering: false,
-    lookup:
+  columns: [
     {
-      dataSource: (options) => {
-        let filter = null
-        if (options.data?.region)
-          filter = ['region', '=', options.data.region]
-        else if (options.data?.country)
-          filter = ['region__country', '=', options.data.country]
-        return {
-          store: cities,
-          filter: filter,
+      dataField: "branch", caption: "Nome sede", allowFiltering: false,
+      validationRules: [{ type: 'required' }],
+      lookup: {
+        dataSource: branches,
+        valueExpr: "id",
+        displayExpr: e => `${e.code} - ${e.name}`,
+      },
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
+      },
+    },
+    {
+      dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'],
+      validationRules: [{ type: 'required' }],
+      editorOptions: { maxLength: 50 }
+    },
+    {
+      dataField: "phone", caption: "Telefono", filterOperations: ['contains'],
+      validationRules: [
+        {
+          type: 'pattern',
+          pattern: phonePattern,
+          message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+        },
+        { type: 'required' }
+      ],
+      editorOptions: {
+        onKeyPress: phoneNumberField,
+        maxLength: 20,
+      }
+    },
+    {
+      dataField: "phone_ext", caption: "Telefono agg.", filterOperations: ['contains'],
+      validationRules: [
+        {
+          type: 'pattern',
+          pattern: phonePattern,
+          message: 'Il cellulare deve contenere solo numeri (massimo 15 cifre) con un "+" opzionale all\'inizio'
+        }
+      ],
+      editorOptions: {
+        onKeyPress: phoneNumberField,
+        maxLength: 20,
+      }
+    },
+    {
+      dataField: "email", caption: "E-mail", filterOperations: ['contains'],
+      validationRules: [
+        {
+          type: 'pattern',
+          pattern: emailPattern,
+          message: 'Inserisci un indirizzo email valido',
+        },
+        { type: 'required' }
+      ],
+    },
+    {
+      dataField: "country", caption: "Paese", allowFiltering: false,
+      lookup: {
+        dataSource: {
+          store: countries,
           paginate: true
+        },
+        valueExpr: "id",
+        displayExpr: e => `${e.iso_code} - ${e.name}`,
+      },
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
+      },
+      async setCellValue(rowData, value) {
+        rowData.country = value;
+        rowData.region = null;
+        rowData.city = null;
+        rowData.address = null;
+      },
+      validationRules: [{ type: 'required' }],
+    },
+    {
+      dataField: "region", caption: "Provincia/stato", allowFiltering: false,
+      lookup: {
+        dataSource: (options) => ({
+          store: regions,
+          filter: options.data ? ['country', '=', options.data.country] : null,
+          paginate: true
+        }),
+        valueExpr: "id",
+        displayExpr: e => e.code ? `${e.code} - ${e.name}` : e.name,
+      },
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
+      },
+      async setCellValue(rowData, value) {
+        rowData.region = value;
+        rowData.city = null;
+        rowData.address = null;
+        if (!value) return;
+
+        if (!rowData.country) {
+          const selectedRegion = await regions.byKey(value);
+          rowData.country = selectedRegion.country;
         }
       },
-      valueExpr: "id",
-      displayExpr: e => {
-        if (e.postcode)
-          return `${e.postcode} - ${e.name}`
-        return e.name
-      },
+      validationRules: [{ type: 'required' }],
     },
-    editorOptions: {
-      searchEnabled: true,
-      showClearButton: true,
-    },
-    validationRules: [
-      {
-        type: 'required'
-      }
-    ],
-    async setCellValue(rowData, value) {
-      rowData.city = value;
-      rowData.address = null
-      if (!value) return
+    {
+      dataField: "city", caption: "Comune", allowFiltering: false,
+      lookup: {
+        dataSource: (options) => {
+          let filter = null;
+          if (options.data?.region)
+            filter = ['region', '=', options.data.region];
+          else if (options.data?.country)
+            filter = ['region__country', '=', options.data.country];
 
-      if (!rowData.region) { // reverse cascading only if region is not selected
-        const selectedCity = await cities.byKey(value);
-        rowData.region = selectedCity.region;
-      }
-      if (!rowData.country) { // reverse cascading only if region is not selected
-        const selectedRegion = await regions.byKey(rowData.region);
-        rowData.country = selectedRegion.country;
+          return {
+            store: cities,
+            filter: filter,
+            paginate: true
+          };
+        },
+        valueExpr: "id",
+        displayExpr: e => e.postcode ? `${e.postcode} - ${e.name}` : e.name,
+      },
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
+      },
+      async setCellValue(rowData, value) {
+        rowData.city = value;
+        rowData.address = null;
+        if (!value) return;
+
+        if (!rowData.region) {
+          const selectedCity = await cities.byKey(value);
+          rowData.region = selectedCity.region;
+        }
+        if (!rowData.country) {
+          const selectedRegion = await regions.byKey(rowData.region);
+          rowData.country = selectedRegion.country;
+        }
+      },
+      validationRules: [{ type: 'required' }],
+    },
+    {
+      dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],
+      validationRules: [{ type: 'required' }],
+      editorOptions: {
+        maxLength: 50,
       }
     },
-  },
-  {
-    dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],
-    validationRules: [
-      {
-        type: 'required'
-      }
-    ],
-    editorOptions: {
-      maxLength: 50,
-    }
-  },
-]
+  ]
+});
 </script>
 
 <template>
-  <div contacts v-if="selectedTab == 0">
-    <DxDataGrid :data-source="aaa" :show-borders="true" :remote-operations="true" :columns="columns"
-      @row-inserting="onRowInserting">
-      <DxPaging :enabled="true" />
-      <DxPager :visible="true" :show-page-size-selector="true" :allowed-page-sizes="[2, 5, 10, 20]" />
-      <dx-filter-row :visible="true" />
-      <DxEditing :allow-updating="true" :allow-adding="true" :allow-deleting="true" mode="popup">
-        <DxPopup :show-title="true" title="Contatto" />
-        <DxForm>
-          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Informazioni">
-            <DxItem data-field="branch" />
-            <DxItem data-field="name" />
-            <DxItem data-field="phone" />
-            <DxItem data-field="phone_ext" />
-            <DxItem data-field="email" />
-          </DxItem>
-          <DxItem :col-count="2" :col-span="2" item-type="group" caption="Indirizzo">
-            <DxItem data-field="country" />
-            <DxItem data-field="region" />
-            <DxItem data-field="city" />
-            <DxItem data-field="address" />
-          </DxItem>
-        </DxForm>
-      </DxEditing>
-    </DxDataGrid>
-  </div>
-  <DxTabs v-model:selected-index="selectedTab">
-    <DxItem text="Contacts" />
-    <DxItem text="Profiles" />
-    <DxItem text="Privacy" />
-  </DxTabs>
+  <DxDataGrid v-bind="gridConfig" />
 </template>
