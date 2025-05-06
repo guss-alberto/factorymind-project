@@ -17,7 +17,7 @@ class RegionSerializer(serializers.ModelSerializer):
 
 class CitySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "name", "region", "postcode"]
+        fields = ["id", "name", "region", "postcode", "country"]
         model = City
 
 
@@ -56,7 +56,7 @@ class ContactSerializer(serializers.ModelSerializer):
     register = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
     country = serializers.PrimaryKeyRelatedField(queryset=Country.objects.all())
-    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all())
+    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), allow_null=True)
     city = serializers.PrimaryKeyRelatedField(queryset=City.objects.all())
 
     class Meta:

@@ -21,6 +21,7 @@ function onRowInserting(e) {
   e.data.register = props.id;
 }
 
+
 const gridConfig = ref({
   dataSource: {
     store: contacts,
@@ -37,7 +38,6 @@ const gridConfig = ref({
   },
   filterRow: { visible: true },
   onRowInserting,
-
   editing: {
     allowUpdating: true,
     allowAdding: true,
@@ -64,6 +64,16 @@ const gridConfig = ref({
           items: ["country", "region", "city", "address"],
         },
       ]
+    }
+  },
+
+  onEditorPreparing(e) {
+    if (e.dataField === 'region') {
+      e.editorOptions.disabled = e.row?.data?.disable_region;
+      if (e.editorOptions.disabled) {
+        e.editorOptions.value = null;
+        e.validationRules = e.validationRules.filter(rule => rule.type !== 'required');
+      }
     }
   },
 
@@ -141,6 +151,7 @@ const gridConfig = ref({
         searchEnabled: true,
       },
       async setCellValue(rowData, value) {
+        rowData.disable_region = false;
         rowData.country = value;
         rowData.region = null;
         rowData.city = null;
@@ -163,13 +174,13 @@ const gridConfig = ref({
         showClearButton: true,
         searchEnabled: true,
       },
-      async setCellValue(rowData, value) {
+      async setCellValue(rowData, value, currentRowData) {
         rowData.region = value;
         rowData.city = null;
         rowData.address = null;
         if (!value) return;
 
-        if (!rowData.country) {
+        if (!currentRowData.country) {
           const selectedRegion = await regions.byKey(value);
           rowData.country = selectedRegion.country;
         }
@@ -184,7 +195,9 @@ const gridConfig = ref({
           if (options.data?.region)
             filter = ['region', '=', options.data.region];
           else if (options.data?.country)
-            filter = ['region__country', '=', options.data.country];
+              filter = ['country', '=', options.data.country];
+              
+          
 
           return {
             store: cities,
@@ -199,18 +212,28 @@ const gridConfig = ref({
         showClearButton: true,
         searchEnabled: true,
       },
-      async setCellValue(rowData, value) {
+      async setCellValue(rowData, value, currentRowData) {
+        rowData.disable_region = false;
         rowData.city = value;
         rowData.address = null;
         if (!value) return;
 
-        if (!rowData.region) {
+        if (!currentRowData.region) {
           const selectedCity = await cities.byKey(value);
-          rowData.region = selectedCity.region;
-        }
-        if (!rowData.country) {
-          const selectedRegion = await regions.byKey(rowData.region);
-          rowData.country = selectedRegion.country;
+          if (!selectedCity.region) {
+            rowData.disable_region = true;
+          } else {
+            rowData.region = selectedCity.region;
+          }
+        } 
+        if (!currentRowData.country) {
+          if (rowData.disable_region) {
+            const selectedRegion = await cities.byKey(rowData.city);
+            rowData.country = selectedRegion.country;
+          } else {
+            const selectedRegion = await regions.byKey(rowData.region);
+            rowData.country = selectedRegion.country;
+          }
         }
       },
       validationRules: [{ type: 'required' }],

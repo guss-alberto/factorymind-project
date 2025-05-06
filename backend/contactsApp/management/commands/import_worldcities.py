@@ -31,17 +31,26 @@ class Command(BaseCommand):
                         iso_code=iso_code,
                         name=country_name,
                     )
+                    
+                    region = None
+                    if province:
+                        region, _ = Region.objects.get_or_create(
+                            name=province,
+                            country=country,
+                        )
 
-                    if not province:
-                        province = "N/A"
+                        City.objects.get_or_create(
+                            name=city_name,
+                            region=region,
+                            country=country
+                        )
 
-                    region, _ = Region.objects.get_or_create(
-                        name=province,
-                        country=country,
-                    )
-
-                    City.objects.get_or_create(name=city_name, region=region)
-
+                    else:
+                        City.objects.get_or_create(
+                            name=city_name,
+                            country=country
+                        )
+                    
                 country, _ = Country.objects.get_or_create(
                     iso_code="ITA",
                     name="Italia",
@@ -67,5 +76,6 @@ class Command(BaseCommand):
                         name=city_name,
                         region=region,
                         postcode=postcode,
+                        country=country,
                     )
                     

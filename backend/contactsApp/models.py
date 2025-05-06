@@ -46,12 +46,13 @@ class City(models.Model):
     Model to represent Cities within a Region
     """
 
-    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=10)
     postcode = models.CharField(max_length=10, null=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ["region", "name"]
+    class Meta: 
+        ordering = ["name", "postcode", "region", "country"]
 
     def __str__(self):
         return f"{self.name} ({self.postcode})"
@@ -96,7 +97,7 @@ class Contact(models.Model):
     phone_ext = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField()
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.CharField(max_length=50)
 

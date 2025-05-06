@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import PageNumberPagination
 from .models import City, Contact, Country, Region, Branch, Register
 from .serializer import (
     CitySerializer,
@@ -43,7 +43,7 @@ class CityFilter(django_filters.FilterSet):
 
     class Meta:
         model = City
-        fields = ["region", "region__country"]
+        fields = ["region", "region__country", "country"]
 
     def filter_search(self, queryset, name, value):
         return queryset.filter( Q(name__icontains=value) | Q(postcode__startswith=value) ).order_by("name")
@@ -53,7 +53,6 @@ class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
     filterset_class = CityFilter
-
 
 
 class CountryFilter(django_filters.FilterSet):
@@ -73,6 +72,13 @@ class CountryViewSet(viewsets.ModelViewSet):
     serializer_class = CountrySerializer
     filterset_class = CountryFilter
     ordering_fields = ["code", "name"]
+    page_size = 100
+  
+
+# class CountryLookUpViewSet(viewsets.ReadOnlyModelViewSet):
+#     queryset = Country.objects.all()
+#     serializer_class = CountrySerializer
+#     pagination_class = None
 
 class BranchFilter(django_filters.FilterSet):
     _search = django_filters.CharFilter(method='filter_search')
