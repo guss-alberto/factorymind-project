@@ -75,11 +75,6 @@ class CountryViewSet(viewsets.ModelViewSet):
     page_size = 100
   
 
-# class CountryLookUpViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = Country.objects.all()
-#     serializer_class = CountrySerializer
-#     pagination_class = None
-
 class BranchFilter(django_filters.FilterSet):
     _search = django_filters.CharFilter(method='filter_search')
 
@@ -154,5 +149,12 @@ class RegisterViewSet(viewsets.ModelViewSet):
     def check_email(self, request):
         email = request.data.get('email', '').strip()
         id = request.data.get('id')
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response(
+                {'error': 'email not valid'},
+                status=status.HTTP_400_BAD_REQUEST 
+            )
         exists = self.queryset.filter(email__iexact=email).exclude(id=id).exists()
         return Response({'available': not exists})
