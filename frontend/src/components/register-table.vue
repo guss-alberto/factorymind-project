@@ -6,7 +6,7 @@ import djangoStore from '@/utils/django-adapter';
 import axios from 'axios';
 import { phonePattern, emailPattern, phoneNumberField, vatPattern } from '@/utils/validation-patterns';
 import RegisterTabs from './register-tabs.vue';
-import { createApp, ref } from 'vue';
+import {  createApp, ref } from 'vue';
 
 const store = djangoStore("http://localhost:8000/api/contacts/register")
 
@@ -149,19 +149,16 @@ const gridConfig = ref({
         }
     }],
     masterDetail: {
-
         enabled: true,
+        component: RegisterTabs,
         template: (container, options) => {
-            const concactDetailComponent = createApp(RegisterTabs, {
-                id: options.data.id
-            })
-            //console.log(options.data.id)
-            concactDetailComponent.mount(container)
-            
-        },
+            const contactDetailComponent = createApp(RegisterTabs, {
+            id: options.data.id  // pass id of the component to RegisterTab
+        });
+        contactDetailComponent.mount(container);
+  }
+}
 
-    }
-    
 })
 </script>
 

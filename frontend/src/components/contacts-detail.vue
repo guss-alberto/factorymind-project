@@ -20,6 +20,7 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions");
 function onRowInserting(e) {
   e.data.register = props.id;
 }
+console.log(props.id)
 
 
 const gridConfig = ref({
@@ -77,15 +78,15 @@ const gridConfig = ref({
     }
   },
 
-  onSaving(e) {
-    e.changes.forEach(change => {
-      const isRegionDisabled = change.data.disable_region;
+  // onSaving(e) {
+  //   e.changes.forEach(change => {
+  //     const isRegionDisabled = change.data.disable_region;
       
-      if (isRegionDisabled && !('region' in change.data)) {
-        change.data.region = null;
-      }
-    });
-  },
+  //     if (isRegionDisabled && !('region' in change.data)) {
+  //       change.data.region = null;
+  //     }
+  //   });
+  // },
 
   columns: [
     {

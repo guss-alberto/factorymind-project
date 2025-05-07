@@ -1,15 +1,18 @@
 <script setup lang="js">
-import { ref } from 'vue';
+import { defineProps, ref } from 'vue';
 import ContactsDetail from './contacts-detail.vue';
 import { DxTabs, DxItem } from 'devextreme-vue/tabs';
 
 const selectedTab = ref(0);
+const props = defineProps({
+    id: { type: Number}
+})
 
 </script>
 
 <template>
     <div v-if="selectedTab == 0">
-        <ContactsDetail />
+        <ContactsDetail :id="props.id"/>
     </div>
     <div v-else-if="selectedTab == 1">
         <p>Profiles content goes here.</p>
