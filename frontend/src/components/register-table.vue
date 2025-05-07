@@ -9,6 +9,7 @@ import RegisterTabs from './register-tabs.vue';
 import {  createApp, ref } from 'vue';
 
 const store = djangoStore("http://localhost:8000/api/contacts/register")
+const registry_types = djangoStore("http://localhost:8000/api/contacts/register_type")
 
 const gridConfig = ref({
     dataSource: store,
@@ -36,7 +37,7 @@ const gridConfig = ref({
                 caption: "Identificativo",
                 colCount: 2,
                 colSpan: 2,
-                items: ["last_name", "first_name"],
+                items: ["last_name", "first_name", "registry_type"],
                 },
                 {
                 itemType: "group",
@@ -48,6 +49,7 @@ const gridConfig = ref({
             ]
         },
     },
+
     columns: [
     {
         dataField: "last_name",
@@ -147,7 +149,36 @@ const gridConfig = ref({
         editorOptions: {
             maxLength: 20,
         }
-    }],
+    },
+    {
+        dataField: "registry_type",
+        caption: "Tipo Anagrafica",
+        validationRules: [{ type: 'required' }],
+        lookup: {
+        dataSource: registry_types,
+        valueExpr: "id",
+        displayExpr: e => `${e.name}`,
+        },
+        editorOptions: {
+            showClearButton: true,
+            searchEnabled: true,
+        },
+    },
+    // {
+    //   dataField: "branch", caption: "Nome sede", allowFiltering: false,
+    //   validationRules: [{ type: 'required' }],
+    //   lookup: {
+    //     dataSource: branches,
+    //     valueExpr: "id",
+    //     displayExpr: e => `${e.code} - ${e.name}`,
+    //   },
+    //   editorOptions: {
+    //     showClearButton: true,
+    //     searchEnabled: true,
+    //   },
+    // },
+    
+    ],
     masterDetail: {
         enabled: true,
         component: RegisterTabs,
@@ -156,9 +187,11 @@ const gridConfig = ref({
             id: options.data.id  // pass id of the component to RegisterTab
         });
         contactDetailComponent.mount(container);
-  }
-}
-
+        }
+    },
+    onRowExpanding: function(e){
+        e.component.collapseAll(-1);
+    },
 })
 </script>
 

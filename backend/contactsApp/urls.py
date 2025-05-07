@@ -9,7 +9,9 @@ from .views import (
                     RegionViewSet,
                     BranchViewSet,
                     RegisterViewSet,
-                    # CountryLookUpViewSet
+                    RegistryTypeViewSet,
+                    DivisionViewSet
+                
 )
 
 router = DefaultRouter()
@@ -19,6 +21,7 @@ router.register(r"cities", CityViewSet)
 router.register(r"branches", BranchViewSet)
 router.register(r"contacts", ContactViewSet)
 router.register(r"register", RegisterViewSet)
-# router.register(r"countries/lookup", CountryLookUpViewSet, basename='country-lookup')
+router.register(r"register_type", RegistryTypeViewSet)
+router.register(r"divisions", DivisionViewSet)
 
 urlpatterns = router.urls

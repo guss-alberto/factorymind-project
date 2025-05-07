@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Contact, Country, Region, Register, Branch
+from .models import City, Contact, Country, Region, Register, Branch, RegistryType, Division
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -30,22 +30,34 @@ class BranchSerializer(serializers.ModelSerializer):
 # visualizzare
 class ContactListSerializer(serializers.ModelSerializer):
     branch = serializers.PrimaryKeyRelatedField(read_only=True)
+    branch__name = serializers.CharField(read_only=True)
+    branch__code = serializers.CharField(read_only=True)
+    branch_display = serializers.CharField(read_only=True)
     country = serializers.PrimaryKeyRelatedField(read_only=True)
+    country__name = serializers.CharField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(read_only=True)
+    city__name = serializers.CharField(read_only=True)
     region = serializers.PrimaryKeyRelatedField(read_only=True)
+    region__name = serializers.CharField(read_only=True)
 
     class Meta:
         fields = [
             "id",
             "branch",
+            "branch__name",
+            "branch__code",
+            "branch_display",
             "register",
             "name",
 			"phone",
 			"phone_ext",
 			"email",
             "country",
+            "country__name",
             "region",
+            "region__name",
             "city",
+            "city__name",
 			"address",
         ]
         model = Contact
@@ -80,5 +92,17 @@ class ContactSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number"]
+        fields = ["id", "first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number", "registry_type"]
         model = Register
+
+  
+class RegistryTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["id", "name"]
+        model = RegistryType
+
+
+class DivisionSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["id", "name", "code", "register"]
+        model = Division

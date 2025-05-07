@@ -5,8 +5,12 @@ from rest_framework.response import Response
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db.models import F
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Concat
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from .models import City, Contact, Country, Region, Branch, Register
+from .models import City, Contact, Country, Region, Branch, Register, RegistryType, Division
 from .serializer import (
     CitySerializer,
     ContactListSerializer,
@@ -15,6 +19,8 @@ from .serializer import (
     RegionSerializer,
     BranchSerializer,
     RegisterSerializer,
+    RegistryTypeSerializer,
+    DivisionSerializer,
 )
 
 
@@ -93,11 +99,18 @@ class BranchViewSet(viewsets.ModelViewSet):
     serializer_class = BranchSerializer
     filterset_class = BranchFilter
     ordering_fields = ["code", "name"]
+
+class RegistryTypeViewSet(viewsets.ModelViewSet):
+    
+    queryset = RegistryType.objects.all()
+    serializer_class = RegistryTypeSerializer
+    ordering_fields = ["name"]
     
 
 search_operations = ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"]
 
-class ContactsFilter(django_filters.FilterSet):
+class ContactFilter(django_filters.FilterSet):
+    branch_display = django_filters.CharFilter(method='filter_branch_display')
 
     class Meta:
         model = Contact
@@ -108,42 +121,54 @@ class ContactsFilter(django_filters.FilterSet):
             "email": search_operations,
             "phone": search_operations,
             "phone_ext": search_operations,
+            "branch__code": search_operations,
+            "branch__name": search_operations,
             "address": search_operations,
+            "country__name": search_operations,
+            "region__name": search_operations,
+            "city__name": search_operations,
         }
 
+    def filter_branch_display(self, queryset, name, value):
+        return queryset.filter(
+            Q(branch__name__icontains=value) | Q(branch__code__icontains=value)
+        ).order_by("branch__name")
 
 class ContactViewSet(viewsets.ModelViewSet):
-    queryset = Contact.objects.all()
-
-    filterset_class = ContactsFilter
+    queryset = Contact.objects.all().annotate(
+                                        branch__name=F('branch__name'),
+                                        branch__code=F('branch__code'),
+                                        branch_display=Concat(
+                                            F('branch__code'),
+                                            Value(' - '),
+                                            F('branch__name'),
+                                            output_field=CharField()
+                                        ),
+                                        country__name=F('country__name'),
+                                        region__name=F('region__name'),
+                                        city__name=F('city__name')
+                                    )
+    filterset_class = ContactFilter
+    ordering_fields = ["name", "email", "phone", "phone_ext", "branch_display"]
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
             return ContactSerializer
         return ContactListSerializer
 
-
-
-class RegisterFilter(django_filters.FilterSet):
-
-    class Meta:
-        model = Register
-        fields = {
-            "id": ["exact", "lt", "gt", "lte", "gte", "range"],
-            "last_name": search_operations,
-            "first_name": search_operations,
-            "email": search_operations,
-            "phone": search_operations,
-            "phone_ext":search_operations,
-            "mobile":search_operations,
-            "vat_number":search_operations,
-        }
-
 class RegisterViewSet(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = RegisterSerializer
-    filterset_class = RegisterFilter
-    ordering_fields = ["first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number"]
+    filterset_fields = {
+        "id": ["exact", "lt", "gt", "lte", "gte", "range"],
+        "last_name": search_operations,
+        "first_name": search_operations,
+        "email": search_operations,
+        "phone": search_operations,
+        "phone_ext":search_operations,
+        "mobile":search_operations,
+        "vat_number":search_operations,
+    }
 
     @action(detail=False, methods=['post'], url_path='check-email')
     def check_email(self, request):
@@ -158,3 +183,10 @@ class RegisterViewSet(viewsets.ModelViewSet):
             )
         exists = self.queryset.filter(email__iexact=email).exclude(id=id).exists()
         return Response({'available': not exists})
+
+
+class DivisionViewSet(viewsets.ModelViewSet):
+    queryset = Division.objects.all()
+    serializer_class = DivisionSerializer
+    ordering_fields = ["name"]
+    filterset_fields = ["register"]

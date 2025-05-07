@@ -1,6 +1,7 @@
 <script setup lang="js">
 import { defineProps, ref } from 'vue';
 import ContactsDetail from './contacts-detail.vue';
+import  DivisionDetail  from './division-detail.vue'
 import { DxTabs, DxItem } from 'devextreme-vue/tabs';
 
 const selectedTab = ref(0);
@@ -18,12 +19,14 @@ const props = defineProps({
         <p>Profiles content goes here.</p>
     </div>
     <div v-else-if="selectedTab == 2">
-        <p>Privacy content goes here.</p>
+        <DivisionDetail :id="props.id" />
+        
     </div>
 
     <DxTabs v-model:selected-index="selectedTab">
-        <DxItem text="Contacts" />
-        <DxItem text="Profiles" />
-        <DxItem text="Privacy" />
+        <DxItem text="Contatti" />
+        <DxItem text="Profili" />
+        <DxItem text="Divisioni" />
+        <DxItem text="Subagenzie" />
     </DxTabs>
 </template>

@@ -90,7 +90,7 @@ const gridConfig = ref({
 
   columns: [
     {
-      dataField: "branch", caption: "Nome sede", allowFiltering: false,
+      dataField: "branch", caption: "Nome sede", allowFiltering: false, allowEditing: true,
       validationRules: [{ type: 'required' }],
       lookup: {
         dataSource: branches,
@@ -101,6 +101,10 @@ const gridConfig = ref({
         showClearButton: true,
         searchEnabled: true,
       },
+      visible: false,
+    },
+    {
+      dataField: "branch_display", caption: "Nome sede", allowFiltering: true, allowEditing: false,
     },
     {
       dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'],

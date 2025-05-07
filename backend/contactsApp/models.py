@@ -68,6 +68,14 @@ class Branch(NameCodeEntity):
 
     def __str__(self):
         return f"{self.name}"
+    
+class RegistryType(NameCodeEntity):
+    """
+    Model to represent Offices/Branches of an organization
+    """
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Register(models.Model):
@@ -79,6 +87,7 @@ class Register(models.Model):
     mobile = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField()
     vat_number = models.CharField(max_length=20, null=True, blank=True)
+    registry_type = models.ForeignKey(RegistryType, on_delete=models.CASCADE )
 
     class Meta:
         ordering = ["last_name", "first_name"]
@@ -107,3 +116,17 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+
+# Models for Tabs
+# ===========================
+
+class Division(NameCodeEntity):
+    register = models.ForeignKey(
+        Register, on_delete=models.CASCADE, related_name="Division"
+      )
+    def __str__(self):
+        return f"{self.code} - {self.name}"
+
+
+    
