@@ -25,7 +25,6 @@ class Country(NameCodeEntity):
     class Meta(NameCodeEntity.Meta):
         verbose_name_plural = "Countries"
 
-
     def __str__(self):
         return f"{self.iso_code} - {self.name}"
 
@@ -122,11 +121,21 @@ class Contact(models.Model):
 # ===========================
 
 class Division(NameCodeEntity):
-    register = models.ForeignKey(
-        Register, on_delete=models.CASCADE, related_name="Division"
+    client = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="client_division"
+    )
+    supplier = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="supplier_division",
+        limit_choices_to={
+            "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
+        }
       )
     def __str__(self):
         return f"{self.code} - {self.name}"
 
 
-    
+   

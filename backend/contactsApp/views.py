@@ -21,6 +21,7 @@ from .serializer import (
     RegisterSerializer,
     RegistryTypeSerializer,
     DivisionSerializer,
+    DivisionListSerializer,
 )
 
 
@@ -110,7 +111,10 @@ class RegistryTypeViewSet(viewsets.ModelViewSet):
 search_operations = ["exact", "contains", "icontains", "startswith", "istartswith", "endswith", "iendswith"]
 
 class ContactFilter(django_filters.FilterSet):
-    branch_display = django_filters.CharFilter(method='filter_branch_display')
+    branch_display__icontains = django_filters.CharFilter(method='filter_branch_display')
+    country_display__icontains = django_filters.CharFilter(method='filter_country_display')
+    city_display__icontains = django_filters.CharFilter(method='filter_city_display')
+    region_display__icontains = django_filters.CharFilter(method='filter_region_display')
 
     class Meta:
         model = Contact
@@ -121,35 +125,56 @@ class ContactFilter(django_filters.FilterSet):
             "email": search_operations,
             "phone": search_operations,
             "phone_ext": search_operations,
-            "branch__code": search_operations,
-            "branch__name": search_operations,
             "address": search_operations,
-            "country__name": search_operations,
             "region__name": search_operations,
             "city__name": search_operations,
         }
 
     def filter_branch_display(self, queryset, name, value):
-        return queryset.filter(
-            Q(branch__name__icontains=value) | Q(branch__code__icontains=value)
-        ).order_by("branch__name")
+        return queryset.filter(branch_display__icontains=value).order_by("branch_display")
+
+    def filter_country_display(self, queryset, name, value):
+        return queryset.filter(country_display__icontains=value).order_by("country_display")
+    
+    def filter_city_display(self, queryset, name, value):
+        return queryset.filter(city_display__icontains=value).order_by("city_display")
+
+    def filter_region_display(self, queryset, name, value):
+        return queryset.filter(region_display__icontains=value).order_by("region_display")
+
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all().annotate(
-                                        branch__name=F('branch__name'),
-                                        branch__code=F('branch__code'),
                                         branch_display=Concat(
                                             F('branch__code'),
                                             Value(' - '),
                                             F('branch__name'),
                                             output_field=CharField()
                                         ),
-                                        country__name=F('country__name'),
-                                        region__name=F('region__name'),
-                                        city__name=F('city__name')
+                                        country_display=Concat(
+                                            F('country__iso_code'),
+                                            Value(' - '),
+                                            F('country__name'),
+                                            output_field=CharField()
+                                        ),
+                                        city_display=Concat(
+                                            F('city__postcode'),
+                                            Value(' - '),
+                                            F('city__name'),
+                                            output_field=CharField()
+                                        ),
+                                        region_display=Concat(
+                                            F('region__code'),
+                                            Value(' - '),
+                                            F('region__name'),
+                                            output_field=CharField()
+                                        )
                                     )
     filterset_class = ContactFilter
-    ordering_fields = ["name", "email", "phone", "phone_ext", "branch_display"]
+    filterset_backend = [DjangoFilterBackend]
+    # annotated filtered fields
+    filter_fields = ['branch_display', 'country_display', 'city_display', 'city__name', 'region_display']
+    ordering_fields = ["name", "email", "phone", "phone_ext", "branch_display", "country_display", "region_display"]
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
@@ -186,7 +211,18 @@ class RegisterViewSet(viewsets.ModelViewSet):
 
 
 class DivisionViewSet(viewsets.ModelViewSet):
-    queryset = Division.objects.all()
-    serializer_class = DivisionSerializer
+    queryset = Division.objects.all()   
     ordering_fields = ["name"]
-    filterset_fields = ["register"]
+    filterset_fields = ["client", "supplier"]
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "retrieve", "partial_update"]:
+            return DivisionSerializer
+        return DivisionListSerializer
+
+class SuppliersViewSet(viewsets.ModelViewSet):
+    queryset = Register.objects.filter(
+            registry_type__name__in=["Fornitore", "Cliente/Fornitore"]  
+        ).distinct()
+    serializer_class = RegisterSerializer
+    

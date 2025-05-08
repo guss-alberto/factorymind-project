@@ -10,21 +10,19 @@ import { defineProps, ref } from 'vue';
 const props = defineProps(["id"]); 
 
 const divisions = djangoStore("http://localhost:8000/api/contacts/divisions");
-const suppliers = djangoStore("http://localhost:8000/api/contacts/register");
+const suppliers = djangoStore("http://localhost:8000/api/contacts/suppliers");
 
 function onRowInserting(e) {
-  e.data.register = props.id;
+  e.data.client = props.id;
 }
-console.log(props.id, 'Division Detail')
 
 const gridConfig = ref({
   dataSource: {
     store: divisions,
-    filter: ["register", "=", props.id],
+    filter: ["client", "=", props.id],
   },
   remoteOperations: true,
   keyExpr: "id",
-
   paging: { enabled: true },
   pager: {
     visible: true,
@@ -44,24 +42,25 @@ const gridConfig = ref({
     },
     form: {
         items: [
-    {
-      dataField: "code",
-      label: { text: "Codice" },
-      editorType: "dxTextBox",
-      validationRules: [{ type: "required" }]
-    },
-    {
-      dataField: "name",
-      label: { text: "Nome" },
-      editorType: "dxTextBox",
-      validationRules: [{ type: "required" }]
-    },
-    {
-      dataField: "register",
-      label: { text: "Fornitore" },
-      editorType: "dxTextBox",
-      validationRules: [{ type: "required" }]
-    }
+          "code", "name", "supplier",
+    // {
+    //   dataField: "code",
+    //   label: { text: "Codice" },
+    //   editorType: "dxTextBox",
+    //   validationRules: [{ type: "required" }]
+    // },
+    // {
+    //   dataField: "name",
+    //   label: { text: "Nome" },
+    //   editorType: "dxTextBox",
+    //   validationRules: [{ type: "required" }]
+    // },
+    // {
+    //   dataField: "suppliers",
+    //   label: { text: "Fornitore" },
+    //   editorType: "dxSelectBox",
+    //   validationRules: [{ type: "required" }]
+    // }
   ]
     }
   },
@@ -80,19 +79,22 @@ const gridConfig = ref({
       editorOptions: { maxLength: 50 }
     },
     {
-      dataField: "suppliers", caption: "Fornitore",
+      dataField: "supplier", caption: "Fornitore",
       lookup: {
         dataSource: suppliers,
         valueExpr: "id",
-        displayExpr: e => ` ${e.name}`
+        displayExpr: e => `${e.last_name} ${e.first_name}`,
       },
-      calculateDisplayValue: (rowData) => {
-        return `${rowData.register}`;
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
       },
+      validationRules: [{ type: 'required' }],
     },
   ],
   
 });
+
 </script>
 
 <template>

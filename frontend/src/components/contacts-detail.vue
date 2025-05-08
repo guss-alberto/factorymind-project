@@ -78,15 +78,15 @@ const gridConfig = ref({
     }
   },
 
-  // onSaving(e) {
-  //   e.changes.forEach(change => {
-  //     const isRegionDisabled = change.data.disable_region;
+  onSaving(e) {
+    e.changes.forEach(change => {
+      const isRegionDisabled = change.data.disable_region;
       
-  //     if (isRegionDisabled && !('region' in change.data)) {
-  //       change.data.region = null;
-  //     }
-  //   });
-  // },
+      if (isRegionDisabled && !('region' in change.data)) {
+        change.data.region = null;
+      }
+    });
+  },
 
   columns: [
     {
@@ -104,7 +104,7 @@ const gridConfig = ref({
       visible: false,
     },
     {
-      dataField: "branch_display", caption: "Nome sede", allowFiltering: true, allowEditing: false,
+      dataField: "branch_display", caption: "Nome sede", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
     },
     {
       dataField: "name", caption: "Ragione sociale", filterOperations: ['contains'],
@@ -152,7 +152,7 @@ const gridConfig = ref({
       ],
     },
     {
-      dataField: "country", caption: "Paese", allowFiltering: false,
+      dataField: "country", caption: "Paese", allowFiltering: false, allowEditing: true,
       lookup: {
         dataSource: {
           store: countries,
@@ -173,9 +173,13 @@ const gridConfig = ref({
         rowData.address = null;
       },
       validationRules: [{ type: 'required' }],
+      visible: false,
     },
     {
-      dataField: "region", caption: "Provincia/stato", allowFiltering: false,
+      dataField: "country_display", caption: "Paese", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
+    },
+    {
+      dataField: "region", caption: "Provincia/stato", allowFiltering: false, allowEditing: true,
       lookup: {
         dataSource: (options) => ({
           store: regions,
@@ -201,9 +205,13 @@ const gridConfig = ref({
         }
       },
       validationRules: [{ type: 'required' }],
+      visible: false,
     },
     {
-      dataField: "city", caption: "Comune", allowFiltering: false,
+      dataField: "region_display", caption: "Provincia/stato", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
+    },
+    {
+      dataField: "city", caption: "Comune", allowFiltering: false, allowEditing: true,
       lookup: {
         dataSource: (options) => {
           let filter = null;
@@ -252,6 +260,10 @@ const gridConfig = ref({
         }
       },
       validationRules: [{ type: 'required' }],
+      visible: false,
+    },
+    {
+      dataField: "city_display", caption: "Comune", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
     },
     {
       dataField: "address", caption: "Indirizzo", filterOperations: ['contains'],

@@ -35,10 +35,16 @@ class ContactListSerializer(serializers.ModelSerializer):
     branch_display = serializers.CharField(read_only=True)
     country = serializers.PrimaryKeyRelatedField(read_only=True)
     country__name = serializers.CharField(read_only=True)
+    country__iso_code = serializers.CharField(read_only=True)
+    country_display = serializers.CharField(read_only=True)
     city = serializers.PrimaryKeyRelatedField(read_only=True)
     city__name = serializers.CharField(read_only=True)
+    city__postcode = serializers.CharField(read_only=True)
+    city_display = serializers.CharField(read_only=True)
     region = serializers.PrimaryKeyRelatedField(read_only=True)
     region__name = serializers.CharField(read_only=True)
+    region__code = serializers.CharField(read_only=True)
+    region_display = serializers.CharField(read_only=True)
 
     class Meta:
         fields = [
@@ -54,10 +60,16 @@ class ContactListSerializer(serializers.ModelSerializer):
 			"email",
             "country",
             "country__name",
+            "country__iso_code",
+            "country_display",
             "region",
             "region__name",
+            "region__code",
+            "region_display",
             "city",
             "city__name",
+            "city__postcode",
+            "city_display",
 			"address",
         ]
         model = Contact
@@ -87,8 +99,6 @@ class ContactSerializer(serializers.ModelSerializer):
             "address",
         ]
 
-        model = Contact
-
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -101,8 +111,22 @@ class RegistryTypeSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
         model = RegistryType
 
-
+#inserimento
 class DivisionSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    
     class Meta:
-        fields = ["id", "name", "code", "register"]
+        fields = ["id", "name", "code", "client", "supplier"]
         model = Division
+
+#visualizzare
+class DivisionListSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(read_only=True)
+    supplier = serializers.PrimaryKeyRelatedField(read_only=True)
+    
+    class Meta:
+        fields = ["id", "name", "code", "client", "supplier"]
+        model = Division
+
+     
