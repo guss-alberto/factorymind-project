@@ -101,8 +101,11 @@ class ContactSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    registry_type_display = serializers.CharField(read_only=True)
+    registry_type__name = serializers.CharField(read_only=True)
+
     class Meta:
-        fields = ["id", "first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number", "registry_type"]
+        fields = ["id", "first_name", "last_name", "phone", "phone_ext", "mobile", "email", "vat_number", "registry_type", "registry_type_display", "registry_type__name"]
         model = Register
 
   
@@ -113,9 +116,8 @@ class RegistryTypeSerializer(serializers.ModelSerializer):
 
 #inserimento
 class DivisionSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
-    
+
     class Meta:
         fields = ["id", "name", "code", "client", "supplier"]
         model = Division
@@ -124,9 +126,12 @@ class DivisionSerializer(serializers.ModelSerializer):
 class DivisionListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(read_only=True)
-    
+    supplier__name = serializers.CharField(read_only=True)
+    supplier__last_name = serializers.CharField(read_only=True)
+    supplier_display = serializers.CharField(read_only=True)
+
     class Meta:
-        fields = ["id", "name", "code", "client", "supplier"]
+        fields = ["id", "name", "code", "client", "supplier", "supplier__name", "supplier__last_name", "supplier_display"]
         model = Division
 
-     
+

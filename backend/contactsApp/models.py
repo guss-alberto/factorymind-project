@@ -137,5 +137,24 @@ class Division(NameCodeEntity):
     def __str__(self):
         return f"{self.code} - {self.name}"
 
+class Sign(NameCodeEntity):
+    def __str__(self):
+        return f"{self.name} {self.code}"
 
-   
+class Profiles(models.Model):
+    client = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="client_profile"
+    )
+    supplier = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="supplier_profile",
+        limit_choices_to={
+            "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
+        }
+    )
+    division = models.ForeignKey(Division, on_delete=models.CASCADE, null=True, blank=True)
+    sign = models.ForeignKey(Sign, on_delete=models.CASCADE )
+    corresponding_code = models.CharField(max_length=50)

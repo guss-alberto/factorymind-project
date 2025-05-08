@@ -145,7 +145,7 @@ class ContactFilter(django_filters.FilterSet):
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all().annotate(
-                                        branch_display=Concat(
+                                        branch_display=Concat(      #annotations for display
                                             F('branch__code'),
                                             Value(' - '),
                                             F('branch__name'),
@@ -180,20 +180,34 @@ class ContactViewSet(viewsets.ModelViewSet):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
             return ContactSerializer
         return ContactListSerializer
+    
+class RegisterFilter(django_filters.FilterSet):
+    registry_type_display__icontains = django_filters.CharFilter(method='filter_registry_type_display')
+
+    class Meta:
+        model = Register
+        fields = {
+            "id": ["exact", "lt", "gt", "lte", "gte", "range"],
+            "last_name": search_operations,
+            "first_name": search_operations,
+            "email": search_operations,
+            "phone": search_operations,
+            "phone_ext":search_operations,
+            "mobile":search_operations,
+            "vat_number":search_operations,
+        }
+
+    def filter_registry_type_display(self, queryset, name, value):
+        return queryset.filter(registry_type_display__icontains=value).order_by("last_name")
+    
 
 class RegisterViewSet(viewsets.ModelViewSet):
-    queryset = Register.objects.all()
+    queryset = Register.objects.all().annotate(
+        registry_type_display = F('registry_type__name')  # annotation for display
+    )   
     serializer_class = RegisterSerializer
-    filterset_fields = {
-        "id": ["exact", "lt", "gt", "lte", "gte", "range"],
-        "last_name": search_operations,
-        "first_name": search_operations,
-        "email": search_operations,
-        "phone": search_operations,
-        "phone_ext":search_operations,
-        "mobile":search_operations,
-        "vat_number":search_operations,
-    }
+    filterset_class = RegisterFilter
+    ordering_fields = ["last_name", "first_name", "email", "phone", "phone_ext", "mobile", "vat_number", "registry_type_display"]
 
     @action(detail=False, methods=['post'], url_path='check-email')
     def check_email(self, request):
@@ -209,11 +223,29 @@ class RegisterViewSet(viewsets.ModelViewSet):
         exists = self.queryset.filter(email__iexact=email).exclude(id=id).exists()
         return Response({'available': not exists})
 
+class DivisionFilter(django_filters.FilterSet):
+    supplier_display__icontains = django_filters.CharFilter(method='filter_supplier_display')
+   
+    class Meta:
+        model = Division
+        fields = {"client", "supplier"}
+
+    def filter_supplier_display(self, queryset, name, value):
+        return queryset.filter(supplier_display__icontains=value).order_by("supplier_display", "name")
 
 class DivisionViewSet(viewsets.ModelViewSet):
-    queryset = Division.objects.all()   
-    ordering_fields = ["name"]
-    filterset_fields = ["client", "supplier"]
+    queryset = Division.objects.all().annotate(
+        supplier_display = Concat(
+            F('supplier__last_name'),
+            Value(' - '),
+            F('supplier__first_name'),
+            output_field=CharField()  # annotation for display
+        )
+    )
+    filterset_class = DivisionFilter
+    filterset_backend = [DjangoFilterBackend]
+    filter_fields = ["supplier_display"]
+    ordering_fields = ["name", "supplier_display"]
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:

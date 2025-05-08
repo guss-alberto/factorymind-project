@@ -1,5 +1,4 @@
-I
-<script setup lang="js">
+<script setup>
 import djangoStore from '@/utils/django-adapter';
 import {
   DxDataGrid
@@ -10,7 +9,6 @@ import { defineProps, ref } from 'vue';
 const props = defineProps(["id"]); 
 
 const divisions = djangoStore("http://localhost:8000/api/contacts/divisions");
-const suppliers = djangoStore("http://localhost:8000/api/contacts/suppliers");
 
 function onRowInserting(e) {
   e.data.client = props.id;
@@ -60,30 +58,12 @@ const gridConfig = ref({
       validationRules: [{ type: 'required' }],
       editorOptions: { maxLength: 50 }
     },
-    {
-      dataField: "supplier", caption: "Fornitore",
-      allowEditing: true,
-      lookup: {
-        dataSource: suppliers,
-        valueExpr: "id",
-        displayExpr: e => `${e.last_name} ${e.first_name}`,
-      },
-      editorOptions: {
-        showClearButton: true,
-        searchEnabled: true,
-      },
-      validationRules: [{ type: 'required' }],
-      visible: false,
-    },
-    {
-      dataField: "supplier_display", caption: "Fornitore", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
-    },
+    
   ],
   
 });
-
 </script>
 
 <template>
-  <DxDataGrid v-bind="gridConfig" />
+    <DxDataGrid v-bind="gridConfig" />
 </template>

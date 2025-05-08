@@ -153,6 +153,7 @@ const gridConfig = ref({
     {
         dataField: "registry_type",
         caption: "Tipo Anagrafica",
+        allowEditing: true,
         validationRules: [{ type: 'required' }],
         lookup: {
         dataSource: registry_types,
@@ -163,21 +164,11 @@ const gridConfig = ref({
             showClearButton: true,
             searchEnabled: true,
         },
+        visible: false,
     },
-    // {
-    //   dataField: "branch", caption: "Nome sede", allowFiltering: false,
-    //   validationRules: [{ type: 'required' }],
-    //   lookup: {
-    //     dataSource: branches,
-    //     valueExpr: "id",
-    //     displayExpr: e => `${e.code} - ${e.name}`,
-    //   },
-    //   editorOptions: {
-    //     showClearButton: true,
-    //     searchEnabled: true,
-    //   },
-    // },
-    
+    {
+      dataField: "registry_type_display", caption: "Tipo Anagrafica", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
+    },
     ],
     masterDetail: {
         enabled: true,
