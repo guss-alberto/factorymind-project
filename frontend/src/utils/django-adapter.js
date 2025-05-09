@@ -14,7 +14,7 @@ let odataToDjango = {
 }
 
 
-function djangoStore(url, key) {
+function djangoStore(url, extraParams = {}, key) {
   const endpoint = axios.create({
     baseURL: url,
     timeout: 5000,
@@ -25,7 +25,7 @@ function djangoStore(url, key) {
     async load(loadOptions) {
       // console.log(url)
       // console.log(loadOptions)
-      let params = {}
+      let params = { ...extraParams }
 
       if (loadOptions.take) {
         params.limit = loadOptions.take

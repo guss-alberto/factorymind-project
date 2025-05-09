@@ -175,7 +175,8 @@ const gridConfig = ref({
         component: RegisterTabs,
         template: (container, options) => {
             const contactDetailComponent = createApp(RegisterTabs, {
-            id: options.data.id  // pass id of the component to RegisterTab
+            id: options.data.id,  // pass id of the component to RegisterTab
+            registry_type: options.data.registry_type_display,
         });
         contactDetailComponent.mount(container);
         }

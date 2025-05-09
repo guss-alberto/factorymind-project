@@ -8,19 +8,19 @@ import { defineProps, ref } from 'vue';
 
 const props = defineProps(["id"]); 
 
-const profiles = djangoStore("http://localhost:8000/api/contacts/profiles");
-const suppliers = djangoStore("http://localhost:8000/api/contacts/suppliers");
-const divisions = djangoStore("http://localhost:8000/api/contacts/divisions");
+const subagencies = djangoStore("http://localhost:8000/api/contacts/subagencies");
+const clients = djangoStore("http://localhost:8000/api/contacts/clients");
 const signes = djangoStore("http://localhost:8000/api/contacts/signes");
+const deposits = djangoStore("http://localhost:8000/api/contacts/deposits");
 
 function onRowInserting(e) {
-  e.data.client = props.id;
+  e.data.supplier = props.id;
 }
 
 const gridConfig = ref({
   dataSource: {
-    store: profiles,
-    filter: ["client", "=", props.id],
+    store: subagencies,
+    filter: ["supplier", "=", props.id],
   },
   remoteOperations: true,
   keyExpr: "id",
@@ -39,16 +39,16 @@ const gridConfig = ref({
     mode: "popup",
     popup: {
       showTitle: true,
-      title: "Profili",
+      title: "SubAgenzie",
     },
     form: {
         items: [
           {
             itemType: "group",
-            caption: "Fornitore",
+            caption: "Cliente",
             colCount: 2,
             colSpan: 2,
-            items: ["supplier", "division"]
+            items: ["client"]
           },
           {
             itemType: "group",
@@ -56,6 +56,13 @@ const gridConfig = ref({
             colCount: 2,
             colSpan: 2,
             items: [ "sign", "corresponding_code"]
+          },
+          {
+            itemType: "group",
+            caption: "Destinazione Merce",
+            colCount: 2,
+            colSpan: 2,
+            items: [ "deposit"]
           } 
         ]
     }
@@ -63,10 +70,10 @@ const gridConfig = ref({
   columns: [
 
   {
-      dataField: "supplier", caption: "Fornitore",
+      dataField: "client", caption: "Cliente",
       allowEditing: true,
       lookup: {
-        dataSource: suppliers,
+        dataSource: clients,
         valueExpr: "id",
         displayExpr: e => `${e.last_name} ${e.first_name}`,
       },
@@ -78,20 +85,7 @@ const gridConfig = ref({
       visible: false,
     },
     {
-      dataField: "supplier_display", caption: "Fornitore", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
-    },
-    {
-      dataField: "division", caption: "Divisioni", allowFiltering: false, allowEditing: true,
-      validationRules: [{ type: 'required' }],
-      lookup: {
-        dataSource: divisions,
-        valueExpr: "id",
-        displayExpr: e => `${e.code} ${e.name}`,
-      },
-      editorOptions: {
-        showClearButton: true,
-        searchEnabled: true,
-      },
+      dataField: "client_display", caption: "Cliente", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
     },
     {
       dataField: "sign", caption: "Sigla", filterOperations: ['contains'],
@@ -107,6 +101,19 @@ const gridConfig = ref({
       dataField: "corresponding_code", caption: "Cod. Corr.", filterOperations: ['contains'],
       validationRules: [{ type: 'required' }],
       editorOptions: { maxLength: 50 }
+    },
+    {
+      dataField: "deposit", caption: "Deposito", allowFiltering: false, allowEditing: true,
+      validationRules: [{ type: 'required' }],
+      lookup: {
+        dataSource: deposits,
+        valueExpr: "id",
+        displayExpr: e => `${e.code} ${e.name}`,
+      },
+      editorOptions: {
+        showClearButton: true,
+        searchEnabled: true,
+      },
     },
     
   ],

@@ -12,6 +12,11 @@ from .views import (
                     RegistryTypeViewSet,
                     DivisionViewSet,
                     SuppliersViewSet,
+                    ClientViewSet,
+                    SignViewSet,
+                    ProfileViewSet,
+                    DepositViewSet,
+                    SubagenciesViewSet,
 )
 
 router = DefaultRouter()
@@ -24,7 +29,11 @@ router.register(r"register", RegisterViewSet, basename="registers")
 router.register(r"register_type", RegistryTypeViewSet)
 router.register(r"divisions", DivisionViewSet)
 router.register(r"suppliers", SuppliersViewSet, basename="suppliers")
-
+router.register(r"clients", ClientViewSet, basename="clients")
+router.register(r"signes", SignViewSet)
+router.register(r"profiles", ProfileViewSet)
+router.register(r"deposits", DepositViewSet)
+router.register(r"subagencies", SubagenciesViewSet)
 
 
 urlpatterns = router.urls

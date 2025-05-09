@@ -124,7 +124,10 @@ class Division(NameCodeEntity):
     client = models.ForeignKey(
         Register, 
         on_delete=models.CASCADE, 
-        related_name="client_division"
+        related_name="client_division",
+            limit_choices_to={  #AGGIUNTO QUESTO
+            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
+        }
     )
     supplier = models.ForeignKey(
         Register, 
@@ -145,12 +148,15 @@ class Profiles(models.Model):
     client = models.ForeignKey(
         Register, 
         on_delete=models.CASCADE, 
-        related_name="client_profile"
+        related_name="client_profiles",
+        limit_choices_to={ 
+            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
+        }
     )
     supplier = models.ForeignKey(
         Register, 
         on_delete=models.CASCADE, 
-        related_name="supplier_profile",
+        related_name="supplier_profiles",
         limit_choices_to={
             "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
         }
@@ -158,3 +164,29 @@ class Profiles(models.Model):
     division = models.ForeignKey(Division, on_delete=models.CASCADE, null=True, blank=True)
     sign = models.ForeignKey(Sign, on_delete=models.CASCADE )
     corresponding_code = models.CharField(max_length=50)
+
+class Deposit(NameCodeEntity):
+    def __str__(self):
+        return f"{self.name} {self.code}"
+
+
+class Subagengies(models.Model):
+    client = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="client_subagencies",
+        limit_choices_to={ 
+            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
+        }
+    )
+    supplier = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="supplier_subagencies",
+        limit_choices_to={
+            "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
+        }
+    )
+    sign = models.ForeignKey(Sign, on_delete=models.CASCADE)
+    corresponding_code = models.CharField(max_length=50)
+    deposit = models.ForeignKey(Deposit, on_delete=models.CASCADE)

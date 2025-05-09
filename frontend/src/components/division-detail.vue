@@ -1,89 +1,94 @@
-I
+<style scoped>
+.success-message {
+  color: green;
+  font-weight: bold;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+</style>I
+
 <script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
-import {
-  DxDataGrid
-} from 'devextreme-vue/data-grid';
+import {DxForm} from 'devextreme-vue/form';
+import { DxButton } from 'devextreme-vue';
 
 import { defineProps, ref } from 'vue';
 
 const props = defineProps(["id"]); 
 
+const suppliers = djangoStore("http://localhost:8000/api/contacts/suppliers/", {excluded_id: props.id});
 const divisions = djangoStore("http://localhost:8000/api/contacts/divisions");
-const suppliers = djangoStore("http://localhost:8000/api/contacts/suppliers");
 
-function onRowInserting(e) {
-  e.data.client = props.id;
-}
 
-const gridConfig = ref({
-  dataSource: {
-    store: divisions,
-    filter: ["client", "=", props.id],
-  },
-  remoteOperations: true,
-  keyExpr: "id",
-  paging: { enabled: true },
-  pager: {
-    visible: true,
-    showPageSizeSelector: true,
-    allowedPageSizes: [2, 5, 10, 20],
-  },
-  filterRow: { visible: true },
-  onRowInserting,
-  editing: {
-    allowUpdating: true,
-    allowAdding: true,
-    allowDeleting: true,
-    mode: "popup",
-    popup: {
-      showTitle: true,
-      title: "Divisioni",
-    },
-    form: {
-        items: [
-          "code", "name", "supplier",
-        ]
+const formData = ref({  
+  client: props.id,
+  code: '',
+  name: '',
+  supplier: null,
+});
+
+const formRef = ref(null);
+const message = ref("");
+
+const handleSubmit = async () => {
+  const formInstance = formRef.value.instance;
+  if (formInstance.validate().isValid) {
+    try {
+      await divisions.insert(formData.value);
+      message.value = 'Dati invitati con successo';
+    } catch (error) {
+      message.value = `Errore: ${error.message}`;
     }
-  },
-  columns: [
+  }
+};
+
+const formConfig = ref([
     {
-      dataField: "code", caption: "Codice", allowFiltering: false, allowEditing: true,
+      dataField: 'code',
+      editorType: 'dxTextBox',
+      label: { text: 'Codice' },
       validationRules: [{ type: 'required' }],
+    },
+    {
+      dataField: 'name',
+      editorType: 'dxTextBox',
+      label: { text: 'Nome' },
+      validationRules: [{ type: 'required' }],
+    },
+    {
+      dataField: "supplier",
+      label: { text: "Fornitore" },
+      editorType: "dxSelectBox",
       editorOptions: {
-        showClearButton: true,
-        searchEnabled: true,
-      },
-    },
-    {
-      dataField: "name", caption: "Nome", filterOperations: ['contains'],
-      validationRules: [{ type: 'required' }],
-      editorOptions: { maxLength: 50 }
-    },
-    {
-      dataField: "supplier", caption: "Fornitore",
-      allowEditing: true,
-      lookup: {
         dataSource: suppliers,
         valueExpr: "id",
-        displayExpr: e => `${e.last_name} ${e.first_name}`,
-      },
-      editorOptions: {
-        showClearButton: true,
+        displayExpr: item => item ? `${item.last_name} ${item.first_name}` : '',
         searchEnabled: true,
+        showClearButton: true,
       },
+      
       validationRules: [{ type: 'required' }],
-      visible: false,
     },
     {
-      dataField: "supplier_display", caption: "Fornitore", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
-    },
-  ],
-  
-});
+      itemType: "simple",
+      editorType: "dxButton",
+      editorOptions: {
+        text: "Invia",
+        type: "default",
+        onClick: handleSubmit,
+      },  
+    }
+  ]
+);
 
 </script>
 
 <template>
-  <DxDataGrid v-bind="gridConfig" />
+  <div v-if="message" :class="{'success-message': message.includes('successo'), 'error-message': message.includes('Errore')}">
+    {{ message }}
+  </div>
+  <DxForm ref="formRef" :formData="formData" :items="formConfig" />
 </template>

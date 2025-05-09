@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Contact, Country, Region, Register, Branch, RegistryType, Division
+from .models import City, Contact, Country, Region, Register, Branch, RegistryType, Division, Sign, Profiles, Deposit, Subagengies
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -134,4 +134,83 @@ class DivisionListSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "client", "supplier", "supplier__name", "supplier__last_name", "supplier_display"]
         model = Division
 
+class SignSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["id", "name", "code"]
+        model = Sign
 
+class ProfilesSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    division = serializers.PrimaryKeyRelatedField(queryset=Division.objects.all())
+
+    class Meta:
+        fields = ["id", 
+                  "client", 
+                  "supplier", 
+                  "division", 
+                  "sign", 
+                  "corresponding_code"
+                  ]
+        model = Profiles
+
+
+class ProfilesListSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(read_only=True)
+    supplier = serializers.PrimaryKeyRelatedField(read_only=True)
+    supplier__first_name = serializers.CharField(read_only=True)
+    supplier__last_name = serializers.CharField(read_only=True)
+    supplier_display = serializers.CharField(read_only=True)
+    division = serializers.PrimaryKeyRelatedField(read_only=True)
+    division__name = serializers.CharField(read_only=True)
+    division__code = serializers.CharField(read_only=True)
+    division_display = serializers.CharField(read_only=True)
+
+    class Meta:
+        fields = ["id", 
+                  "client", 
+                  "supplier", 
+                  "division", 
+                  "sign", 
+                  "corresponding_code", 
+                  "supplier__first_name", 
+                  "supplier__last_name", 
+                  "supplier_display",
+                  "division__name",
+                  "division__code",
+                  "division_display"
+                  ]
+        model = Profiles
+
+class DepositSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["id", "name", "code"]
+        model = Deposit
+
+class SubagenciesSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+
+    class Meta:
+        fields = ["id", 
+                  "client", 
+                  "supplier", 
+                  "sign", 
+                  "deposit",
+                  "corresponding_code"
+                  ]
+        model = Subagengies
+
+class SubagenciesListSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(read_only=True)
+    supplier = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        fields = ["id", 
+                  "client", 
+                  "supplier", 
+                  "sign", 
+                  "deposit",
+                  "corresponding_code"
+                  ]
+        model = Subagengies
