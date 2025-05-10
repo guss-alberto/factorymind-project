@@ -280,13 +280,22 @@ class SuppliersViewSet(viewsets.ModelViewSet):
 
 
 class ClientViewSet(viewsets.ModelViewSet):
-    queryset = Register.objects.filter(
-            registry_type__name__in=["Cliente", "Cliente/Fornitore"]  
-        ).distinct()
     serializer_class = RegisterSerializer
-    
+
+    def get_queryset(self):
+        queryset = Register.objects.filter(
+            registry_type__name__in=["Cliente", "Cliente/Fornitore"]
+        )
+
+        excluded_id = self.request.query_params.get("excluded_id")
+        if excluded_id and excluded_id.isdigit():
+            queryset = queryset.exclude(id=int(excluded_id))
+
+        return queryset.distinct()
+ 
 class SignViewSet(viewsets.ModelViewSet):
     serializer_class = SignSerializer
+    filterset_fields = {"supplier": ["exact"]}
 
     def get_queryset(self):
         queryset = Sign.objects.all()
@@ -352,20 +361,40 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return ProfilesListSerializer
 
 class DepositViewSet(viewsets.ModelViewSet):
-    queryset = Deposit.objects.all()
     serializer_class = DepositSerializer
+    filterset_fields = {"supplier": ["exact"]}
+
+    def get_queryset(self):
+        queryset = Deposit.objects.all()
+
+        excluded_supplier = self.request.query_params.get("excluded_supplier")
+        if excluded_supplier and excluded_supplier.isdigit():
+            queryset = queryset.exclude(supplier=int(excluded_supplier))
+
+        return queryset.distinct()
 
 
 class SubagenciesFilter(django_filters.FilterSet):
     client_display__icontains = django_filters.CharFilter(method='filter_client_display')
+    sign_display__icontains = django_filters.CharFilter(method='filter_sign_display')
+    deposit_display__icontains = django_filters.CharFilter(method='filter_deposit_display')
 
     class Meta:
         model = Subagengies
-        fields = {"client"}
+        fields = {
+            "corresponding_code": search_operations,
+            "client": ["exact"],
+            "supplier": ["exact"],
+        }
 
     def filter_client_display(self, queryset, name, value):
-        return queryset.filter(client_display__icontains=value).order_by("client_display", "name")
+        return queryset.filter(client_display__icontains=value).order_by("client_display")
 
+    def filter_sign_display(self, queryset, name, value):
+        return queryset.filter(sign_display__icontains=value).order_by("sign_display")
+
+    def filter_deposit_display(self, queryset, name, value):
+        return queryset.filter(deposit_display__icontains=value).order_by("deposit_display")
 
 class SubagenciesViewSet(viewsets.ModelViewSet):
     queryset = Subagengies.objects.all().annotate(
@@ -374,11 +403,24 @@ class SubagenciesViewSet(viewsets.ModelViewSet):
             Value(' - '),
             F('client__first_name'),
             output_field=CharField()
+        ),
+        sign_display = Concat(
+            F('sign__code'), 
+            Value(' - '),
+            F('sign__name'),
+            output_field=CharField()
+        ),
+        deposit_display = Concat(
+            F('deposit__code'), 
+            Value(' - '),
+            F('deposit__name'),
+            output_field=CharField()
         )
+
     )
     filterset_class = SubagenciesFilter
-    filter_fields = ["client_display"]
-    ordering_fields = ["client_display" ]
+    filter_fields = ["client_display", "sign_display", "corresponding_code", "deposit_display"]
+    ordering_fields = ["client_display", "corresponding_code", "sign_display", "deposit_display"]
    
 
     def get_serializer_class(self):

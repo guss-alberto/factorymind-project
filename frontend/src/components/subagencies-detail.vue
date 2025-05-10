@@ -9,7 +9,7 @@ import { defineProps, ref } from 'vue';
 const props = defineProps(["id"]); 
 
 const subagencies = djangoStore("http://localhost:8000/api/contacts/subagencies");
-const clients = djangoStore("http://localhost:8000/api/contacts/clients");
+const clients = djangoStore("http://localhost:8000/api/contacts/clients", {excluded_id: props.id});
 const signes = djangoStore("http://localhost:8000/api/contacts/signes");
 const deposits = djangoStore("http://localhost:8000/api/contacts/deposits");
 
@@ -89,13 +89,22 @@ const gridConfig = ref({
     },
     {
       dataField: "sign", caption: "Sigla", filterOperations: ['contains'],
+      allowFiltering: false, allowEditing: true,
       validationRules: [{ type: 'required' }],
       lookup: {
-        dataSource: signes,
+        dataSource:  ({
+          store: signes,
+          filter: ['supplier', '=', props.id],
+          paginate: true
+        }),
         valueExpr: "id",
         displayExpr: e => `${e.code}`,
       },
-      editorOptions: { maxLength: 50 }
+      editorOptions: { maxLength: 50 },
+      visible: false,
+    },
+    {
+      dataField: "sign_display", caption: "Sigla", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
     },
     {
       dataField: "corresponding_code", caption: "Cod. Corr.", filterOperations: ['contains'],
@@ -106,7 +115,11 @@ const gridConfig = ref({
       dataField: "deposit", caption: "Deposito", allowFiltering: false, allowEditing: true,
       validationRules: [{ type: 'required' }],
       lookup: {
-        dataSource: deposits,
+        dataSource: ({
+          store: deposits,
+          filter: ['supplier', '=', props.id],
+          paginate: true
+        }),
         valueExpr: "id",
         displayExpr: e => `${e.code} ${e.name}`,
       },
@@ -114,8 +127,11 @@ const gridConfig = ref({
         showClearButton: true,
         searchEnabled: true,
       },
+      visible: false,
     },
-    
+    {
+      dataField: "deposit_display", caption: "Deposito", allowFiltering: true, allowEditing: false, filterOperations: ['contains'],
+    },
   ],
   
 });

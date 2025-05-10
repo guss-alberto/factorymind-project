@@ -152,29 +152,17 @@ class Sign(NameCodeEntity):
     
     def __str__(self):
         return f"{self.name} {self.code}"
-
-class Profiles(models.Model):
-    client = models.ForeignKey(
-        Register, 
-        on_delete=models.CASCADE, 
-        related_name="client_profiles",
-        limit_choices_to={ 
-            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
-        }
-    )
+    
+class Deposit(NameCodeEntity):
     supplier = models.ForeignKey(
         Register, 
         on_delete=models.CASCADE, 
-        related_name="supplier_profiles",
+        related_name="supplier_deposits",
         limit_choices_to={
             "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
         }
-    )
-    division = models.ForeignKey(Division, on_delete=models.CASCADE, null=True, blank=True)
-    sign = models.ForeignKey(Sign, on_delete=models.CASCADE )
-    corresponding_code = models.CharField(max_length=50)
-
-class Deposit(NameCodeEntity):
+    )    
+    
     def __str__(self):
         return f"{self.name} {self.code}"
 
@@ -199,3 +187,46 @@ class Subagengies(models.Model):
     sign = models.ForeignKey(Sign, on_delete=models.CASCADE)
     corresponding_code = models.CharField(max_length=50)
     deposit = models.ForeignKey(Deposit, on_delete=models.CASCADE)
+
+class Profiles(models.Model):
+    client = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="client_profiles",
+        limit_choices_to={ 
+            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
+        }
+    )
+    supplier = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="supplier_profiles",
+        limit_choices_to={
+            "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
+        }
+    )
+    division = models.ForeignKey(Division, on_delete=models.CASCADE, null=True, blank=True)
+    sign = models.ForeignKey(Sign, on_delete=models.CASCADE )
+    corresponding_code = models.CharField(max_length=50)
+
+class ProfilesAndSubagencies(models.Model):
+    client = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="client_profiles",
+        limit_choices_to={ 
+            "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
+        }
+    )
+    supplier = models.ForeignKey(
+        Register, 
+        on_delete=models.CASCADE, 
+        related_name="supplier_profiles",
+        limit_choices_to={
+            "registry_type__name__in": ["Fornitore", "Cliente/Fornitore"]
+        }
+    )
+    division = models.ForeignKey(Division, on_delete=models.CASCADE, null=True, blank=True)
+    sign = models.ForeignKey(Sign, on_delete=models.CASCADE)
+    corresponding_code = models.CharField(max_length=50)
+    deposit = models.ForeignKey(Deposit, on_delete=models.CASCADE, null=True, blank=True)

@@ -134,6 +134,7 @@ class DivisionListSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "client", "supplier", "supplier__name", "supplier__last_name", "supplier_display"]
         model = Division
 
+
 class SignSerializer(serializers.ModelSerializer):
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
 
@@ -194,12 +195,14 @@ class ProfilesListSerializer(serializers.ModelSerializer):
 
 class DepositSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ["id", "name", "code"]
+        fields = ["id", "name", "code", "supplier"]
         model = Deposit
 
+#inserimento
 class SubagenciesSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+    deposit = serializers.PrimaryKeyRelatedField(queryset=Deposit.objects.all())
 
     class Meta:
         fields = ["id", 
@@ -211,16 +214,37 @@ class SubagenciesSerializer(serializers.ModelSerializer):
                   ]
         model = Subagengies
 
+#visualizzare
 class SubagenciesListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
+    client__first_name = serializers.CharField(read_only=True)
+    client__last_name = serializers.CharField(read_only=True)
+    client_display = serializers.CharField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(read_only=True)
+    sign__code = serializers.CharField(read_only=True)
+    sign__name = serializers.CharField(read_only=True)
+    sign_display = serializers.CharField(read_only=True)
+    deposit = serializers.PrimaryKeyRelatedField(read_only=True)
+    deposit__name = serializers.CharField(read_only=True)
+    deposit__code = serializers.CharField(read_only=True)
+    deposit_display = serializers.CharField(read_only=True)
 
     class Meta:
-        fields = ["id", 
-                  "client", 
-                  "supplier", 
-                  "sign", 
-                  "deposit",
-                  "corresponding_code"
+        fields = [
+            "id", 
+            "client", 
+            "client__first_name",
+            "client__last_name",
+            "client_display",
+            "supplier", 
+            "sign", 
+            "sign__name",
+            "sign__code",
+            "sign_display",
+            "deposit",
+            "deposit__name",
+            "deposit__code",
+            "deposit_display",
+            "corresponding_code"
                   ]
         model = Subagengies

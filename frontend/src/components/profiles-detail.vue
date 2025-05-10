@@ -87,9 +87,8 @@ const gridConfig = ref({
     },
     {
       dataField: "division", caption: "Divisioni", allowFiltering: false, allowEditing: true,
-      allowEditing: true,
       validationRules: [{ type: 'required' }],
-      lookup: {
+      lookup: { 
         dataSource: (options) => ({
           store: divisions,
           filter: options.data ? ['supplier', '=', options.data.supplier] : null,

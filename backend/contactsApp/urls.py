@@ -32,7 +32,7 @@ router.register(r"suppliers", SuppliersViewSet, basename="suppliers")
 router.register(r"clients", ClientViewSet, basename="clients")
 router.register(r"signes", SignViewSet, basename="signes")
 router.register(r"profiles", ProfileViewSet, basename="profiles")
-router.register(r"deposits", DepositViewSet)
+router.register(r"deposits", DepositViewSet, basename="deposits")
 router.register(r"subagencies", SubagenciesViewSet)
 
 
