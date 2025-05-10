@@ -13,7 +13,6 @@
 <script setup lang="js">
 import djangoStore from '@/utils/django-adapter';
 import {DxForm} from 'devextreme-vue/form';
-import { DxButton } from 'devextreme-vue';
 
 import { defineProps, ref } from 'vue';
 

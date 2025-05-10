@@ -135,10 +135,13 @@ class DivisionListSerializer(serializers.ModelSerializer):
         model = Division
 
 class SignSerializer(serializers.ModelSerializer):
+    supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+
     class Meta:
-        fields = ["id", "name", "code"]
+        fields = ["id", "name", "code", 'supplier']
         model = Sign
 
+#inserimento
 class ProfilesSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
@@ -154,7 +157,7 @@ class ProfilesSerializer(serializers.ModelSerializer):
                   ]
         model = Profiles
 
-
+#visualizzare
 class ProfilesListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -165,6 +168,10 @@ class ProfilesListSerializer(serializers.ModelSerializer):
     division__name = serializers.CharField(read_only=True)
     division__code = serializers.CharField(read_only=True)
     division_display = serializers.CharField(read_only=True)
+    sign = serializers.PrimaryKeyRelatedField(read_only=True)
+    sign__name = serializers.CharField(read_only=True)
+    sign__code = serializers.CharField(read_only=True)
+    sign_display = serializers.CharField(read_only=True)
 
     class Meta:
         fields = ["id", 
@@ -172,6 +179,9 @@ class ProfilesListSerializer(serializers.ModelSerializer):
                   "supplier", 
                   "division", 
                   "sign", 
+                  "sign__name",
+                  "sign__code",
+                  "sign_display",
                   "corresponding_code", 
                   "supplier__first_name", 
                   "supplier__last_name", 

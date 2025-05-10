@@ -34,8 +34,8 @@ const cliente = props.registry_type == 'Cliente' || props.registry_type == 'Clie
 
     <DxTabs v-model:selected-index="selectedTab">
         <DxItem text="Contatti" />
-        <DxItem :visible= "cliente", text="Divisioni" />
-        <DxItem :visible= "cliente", text="Profili"  />
-        <DxItem :visible= "fornitore", text="Subagenzie" />
+        <DxItem :visible= "cliente" text="Divisioni" />
+        <DxItem :visible= "cliente" text="Profili"  />
+        <DxItem :visible= "fornitore" text="Subagenzie" />
     </DxTabs>
 </template>

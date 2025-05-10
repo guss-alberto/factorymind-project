@@ -239,14 +239,6 @@ class DivisionFilter(django_filters.FilterSet):
         return queryset.filter(supplier_display__icontains=value).order_by("supplier_display", "name")
 
 class DivisionViewSet(viewsets.ModelViewSet):
-    queryset = Division.objects.all().annotate(
-        supplier_display = Concat(
-            F('supplier__last_name'),
-            Value(' - '),
-            F('supplier__first_name'),
-            output_field=CharField()  # annotation for display
-        )
-    )
     filterset_class = DivisionFilter
     filter_fields = ["supplier_display"]
     ordering_fields = ["name", "supplier_display"]
@@ -255,6 +247,22 @@ class DivisionViewSet(viewsets.ModelViewSet):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
             return DivisionSerializer
         return DivisionListSerializer
+
+    def get_queryset(self):
+        queryset = Division.objects.all().annotate(
+            supplier_display = Concat(
+                F('supplier__last_name'),
+                Value(' - '),
+                F('supplier__first_name'),
+                output_field=CharField()  # annotation for display
+            )
+        )
+
+        excluded_supplier = self.request.query_params.get("excluded_supplier")
+        if excluded_supplier and excluded_supplier.isdigit():
+            queryset = queryset.exclude(supplier=int(excluded_supplier))
+
+        return queryset.distinct()
 
 class SuppliersViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
@@ -278,23 +286,39 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     
 class SignViewSet(viewsets.ModelViewSet):
-    queryset = Sign.objects.all()
     serializer_class = SignSerializer
+
+    def get_queryset(self):
+        queryset = Sign.objects.all()
+
+        excluded_supplier = self.request.query_params.get("excluded_supplier")
+        if excluded_supplier and excluded_supplier.isdigit():
+            queryset = queryset.exclude(supplier=int(excluded_supplier))
+
+        return queryset.distinct()
 
 
 class ProfileFilter(django_filters.FilterSet):
     supplier_display__icontains = django_filters.CharFilter(method='filter_supplier_display')
     division_display__icontains = django_filters.CharFilter(method='filter_division_display')
+    sign_display__icontains = django_filters.CharFilter(method='filter_sign_display')
 
     class Meta:
         model = Profiles
-        fields = {"supplier", "division"}
+        fields = {
+                "corresponding_code": search_operations,
+                "client": ["exact"],
+                }
 
     def filter_supplier_display(self, queryset, name, value):
-        return queryset.filter(supplier_display__icontains=value).order_by("supplier_display", "name")
+        return queryset.filter(supplier_display__icontains=value).order_by("supplier_display")
 
     def filter_division_display(self, queryset, name, value):
-        return queryset.filter(division_display__icontains=value).order_by("division_display", "name")
+        return queryset.filter(division_display__icontains=value).order_by("division_display")
+
+    def filter_sign_display(self, queryset, name, value):
+        return queryset.filter(sign_display__icontains=value).order_by("sign_display")
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profiles.objects.all().annotate(
@@ -309,11 +333,17 @@ class ProfileViewSet(viewsets.ModelViewSet):
             Value(' - '),
             F('division__name'),
             output_field=CharField()
+        ),
+        sign_display = Concat(
+            F('sign__code'), 
+            Value(' - '),
+            F('sign__name'),
+            output_field=CharField()
         )
     )
     filterset_class = ProfileFilter
-    filter_fields = ["supplier_display", "division_display"]
-    ordering_fields = [ "supplier_display", "division_display"]
+    filter_fields = ["supplier_display", "division_display", "sign_display", "corresponding_code"]
+    ordering_fields = [ "supplier_display", "division_display", "sign_display", "corresponding_code"]
    
 
     def get_serializer_class(self):
