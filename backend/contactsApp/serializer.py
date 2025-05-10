@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import City, Contact, Country, Region, Register, Branch, RegistryType, Division, Sign, Profiles, Deposit, Subagengies
+from .models import City, Contact, Country, Region, Register, Branch, RegistryType, Division, Sign, ProfilesAndSubagencies, Deposit
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -142,25 +142,35 @@ class SignSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", 'supplier']
         model = Sign
 
+class DepositSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ["id", "name", "code", "supplier"]
+        model = Deposit
+ 
 #inserimento
-class ProfilesSerializer(serializers.ModelSerializer):
+class ProfilesAndSubagenciensSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
-    division = serializers.PrimaryKeyRelatedField(queryset=Division.objects.all())
+    deposit = serializers.PrimaryKeyRelatedField(queryset=Deposit.objects.all(), allow_null=True)
+    division = serializers.PrimaryKeyRelatedField(queryset=Division.objects.all(), allow_null=True)
 
     class Meta:
         fields = ["id", 
                   "client", 
                   "supplier", 
-                  "division", 
                   "sign", 
+                  "deposit",
+                  "division",
                   "corresponding_code"
                   ]
-        model = Profiles
+        model = ProfilesAndSubagencies
 
 #visualizzare
-class ProfilesListSerializer(serializers.ModelSerializer):
+class ProfilesAndSubagenciensListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
+    client__first_name = serializers.CharField(read_only=True)
+    client__last_name = serializers.CharField(read_only=True)
+    client_display = serializers.CharField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(read_only=True)
     supplier__first_name = serializers.CharField(read_only=True)
     supplier__last_name = serializers.CharField(read_only=True)
@@ -169,58 +179,6 @@ class ProfilesListSerializer(serializers.ModelSerializer):
     division__name = serializers.CharField(read_only=True)
     division__code = serializers.CharField(read_only=True)
     division_display = serializers.CharField(read_only=True)
-    sign = serializers.PrimaryKeyRelatedField(read_only=True)
-    sign__name = serializers.CharField(read_only=True)
-    sign__code = serializers.CharField(read_only=True)
-    sign_display = serializers.CharField(read_only=True)
-
-    class Meta:
-        fields = ["id", 
-                  "client", 
-                  "supplier", 
-                  "division", 
-                  "sign", 
-                  "sign__name",
-                  "sign__code",
-                  "sign_display",
-                  "corresponding_code", 
-                  "supplier__first_name", 
-                  "supplier__last_name", 
-                  "supplier_display",
-                  "division__name",
-                  "division__code",
-                  "division_display"
-                  ]
-        model = Profiles
-
-class DepositSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ["id", "name", "code", "supplier"]
-        model = Deposit
-
-#inserimento
-class SubagenciesSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
-    supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
-    deposit = serializers.PrimaryKeyRelatedField(queryset=Deposit.objects.all())
-
-    class Meta:
-        fields = ["id", 
-                  "client", 
-                  "supplier", 
-                  "sign", 
-                  "deposit",
-                  "corresponding_code"
-                  ]
-        model = Subagengies
-
-#visualizzare
-class SubagenciesListSerializer(serializers.ModelSerializer):
-    client = serializers.PrimaryKeyRelatedField(read_only=True)
-    client__first_name = serializers.CharField(read_only=True)
-    client__last_name = serializers.CharField(read_only=True)
-    client_display = serializers.CharField(read_only=True)
-    supplier = serializers.PrimaryKeyRelatedField(read_only=True)
     sign__code = serializers.CharField(read_only=True)
     sign__name = serializers.CharField(read_only=True)
     sign_display = serializers.CharField(read_only=True)
@@ -236,7 +194,10 @@ class SubagenciesListSerializer(serializers.ModelSerializer):
             "client__first_name",
             "client__last_name",
             "client_display",
-            "supplier", 
+            "supplier",
+            "supplier__first_name", 
+            "supplier__last_name", 
+            "supplier_display",
             "sign", 
             "sign__name",
             "sign__code",
@@ -245,6 +206,10 @@ class SubagenciesListSerializer(serializers.ModelSerializer):
             "deposit__name",
             "deposit__code",
             "deposit_display",
+            "division",
+            "division__name",
+            "division__code",
+            "division_display",
             "corresponding_code"
                   ]
-        model = Subagengies
+        model = ProfilesAndSubagencies

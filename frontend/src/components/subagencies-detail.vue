@@ -8,7 +8,7 @@ import { defineProps, ref } from 'vue';
 
 const props = defineProps(["id"]); 
 
-const subagencies = djangoStore("http://localhost:8000/api/contacts/subagencies");
+const subagencies = djangoStore("http://localhost:8000/api/contacts/profiles-subagencies");
 const clients = djangoStore("http://localhost:8000/api/contacts/clients", {excluded_id: props.id});
 const signes = djangoStore("http://localhost:8000/api/contacts/signes");
 const deposits = djangoStore("http://localhost:8000/api/contacts/deposits");
@@ -67,6 +67,13 @@ const gridConfig = ref({
         ]
     }
   },
+
+  onSaving(e) {
+    e.changes.forEach(change => {
+        change.data.division = null;
+    });
+  },
+
   columns: [
 
   {

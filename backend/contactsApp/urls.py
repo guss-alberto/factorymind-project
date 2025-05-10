@@ -14,9 +14,8 @@ from .views import (
                     SuppliersViewSet,
                     ClientViewSet,
                     SignViewSet,
-                    ProfileViewSet,
                     DepositViewSet,
-                    SubagenciesViewSet,
+                    ProfilesAndSubagenciesViewSet
 )
 
 router = DefaultRouter()
@@ -31,9 +30,8 @@ router.register(r"divisions", DivisionViewSet, basename="divisions")
 router.register(r"suppliers", SuppliersViewSet, basename="suppliers")
 router.register(r"clients", ClientViewSet, basename="clients")
 router.register(r"signes", SignViewSet, basename="signes")
-router.register(r"profiles", ProfileViewSet, basename="profiles")
+router.register(r"profiles-subagencies", ProfilesAndSubagenciesViewSet, basename="profiles-subagencies")
 router.register(r"deposits", DepositViewSet, basename="deposits")
-router.register(r"subagencies", SubagenciesViewSet)
 
 
 urlpatterns = router.urls

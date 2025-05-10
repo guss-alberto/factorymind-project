@@ -9,7 +9,7 @@ from django.db.models import F, Value, CharField
 from django.db.models.functions import Concat
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import PageNumberPagination
-from .models import City, Contact, Country, Region, Branch, Register, RegistryType, Division, Sign, Profiles,Deposit, Subagengies
+from .models import City, Contact, Country, Region, Branch, Register, RegistryType, Division, Sign, ProfilesAndSubagencies, Deposit
 from .serializer import (
     CitySerializer,
     ContactListSerializer,
@@ -22,11 +22,9 @@ from .serializer import (
     DivisionSerializer,
     DivisionListSerializer,
     SignSerializer,
-    ProfilesSerializer,
-    ProfilesListSerializer,
     DepositSerializer,
-    SubagenciesSerializer,
-    SubagenciesListSerializer,
+    ProfilesAndSubagenciensSerializer,
+    ProfilesAndSubagenciensListSerializer,
 )
 
 
@@ -306,60 +304,6 @@ class SignViewSet(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
-
-class ProfileFilter(django_filters.FilterSet):
-    supplier_display__icontains = django_filters.CharFilter(method='filter_supplier_display')
-    division_display__icontains = django_filters.CharFilter(method='filter_division_display')
-    sign_display__icontains = django_filters.CharFilter(method='filter_sign_display')
-
-    class Meta:
-        model = Profiles
-        fields = {
-                "corresponding_code": search_operations,
-                "client": ["exact"],
-                }
-
-    def filter_supplier_display(self, queryset, name, value):
-        return queryset.filter(supplier_display__icontains=value).order_by("supplier_display")
-
-    def filter_division_display(self, queryset, name, value):
-        return queryset.filter(division_display__icontains=value).order_by("division_display")
-
-    def filter_sign_display(self, queryset, name, value):
-        return queryset.filter(sign_display__icontains=value).order_by("sign_display")
-
-
-class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profiles.objects.all().annotate(
-        supplier_display = Concat(
-            F('supplier__last_name'), 
-            Value(' - '),
-            F('supplier__first_name'),
-            output_field=CharField()
-        ),
-        division_display = Concat(
-            F('division__code'), 
-            Value(' - '),
-            F('division__name'),
-            output_field=CharField()
-        ),
-        sign_display = Concat(
-            F('sign__code'), 
-            Value(' - '),
-            F('sign__name'),
-            output_field=CharField()
-        )
-    )
-    filterset_class = ProfileFilter
-    filter_fields = ["supplier_display", "division_display", "sign_display", "corresponding_code"]
-    ordering_fields = [ "supplier_display", "division_display", "sign_display", "corresponding_code"]
-   
-
-    def get_serializer_class(self):
-        if self.action in ["create", "update", "retrieve", "partial_update"]:
-            return ProfilesSerializer
-        return ProfilesListSerializer
-
 class DepositViewSet(viewsets.ModelViewSet):
     serializer_class = DepositSerializer
     filterset_fields = {"supplier": ["exact"]}
@@ -373,16 +317,19 @@ class DepositViewSet(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
-
-class SubagenciesFilter(django_filters.FilterSet):
+class ProfilesAndSubagenciesFilter(django_filters.FilterSet):
     client_display__icontains = django_filters.CharFilter(method='filter_client_display')
     sign_display__icontains = django_filters.CharFilter(method='filter_sign_display')
     deposit_display__icontains = django_filters.CharFilter(method='filter_deposit_display')
+    supplier_display__icontains = django_filters.CharFilter(method='filter_supplier_display')
+    division_display__icontains = django_filters.CharFilter(method='filter_division_display')
 
     class Meta:
-        model = Subagengies
+        model = ProfilesAndSubagencies
         fields = {
             "corresponding_code": search_operations,
+            "deposit": ["exact"],
+            "division": ["exact"],
             "client": ["exact"],
             "supplier": ["exact"],
         }
@@ -396,8 +343,15 @@ class SubagenciesFilter(django_filters.FilterSet):
     def filter_deposit_display(self, queryset, name, value):
         return queryset.filter(deposit_display__icontains=value).order_by("deposit_display")
 
-class SubagenciesViewSet(viewsets.ModelViewSet):
-    queryset = Subagengies.objects.all().annotate(
+    def filter_supplier_display(self, queryset, name, value):
+        return queryset.filter(supplier_display__icontains=value).order_by("supplier_display")
+
+    def filter_division_display(self, queryset, name, value):
+        return queryset.filter(division_display__icontains=value).order_by("division_display")
+
+
+class ProfilesAndSubagenciesViewSet(viewsets.ModelViewSet):
+    queryset = ProfilesAndSubagencies.objects.all().annotate(
         client_display = Concat(
             F('client__last_name'), 
             Value(' - '),
@@ -415,15 +369,26 @@ class SubagenciesViewSet(viewsets.ModelViewSet):
             Value(' - '),
             F('deposit__name'),
             output_field=CharField()
-        )
-
+        ),
+        supplier_display = Concat(
+            F('supplier__last_name'), 
+            Value(' - '),
+            F('supplier__first_name'),
+            output_field=CharField()
+        ),
+        division_display = Concat(
+            F('division__code'), 
+            Value(' - '),
+            F('division__name'),
+            output_field=CharField()
+        ),
     )
-    filterset_class = SubagenciesFilter
-    filter_fields = ["client_display", "sign_display", "corresponding_code", "deposit_display"]
-    ordering_fields = ["client_display", "corresponding_code", "sign_display", "deposit_display"]
+    filterset_class = ProfilesAndSubagenciesFilter
+    filter_fields = ["client_display", "sign_display", "corresponding_code", "deposit_display", "supplier_display", "division_display"]
+    ordering_fields = ["client_display", "corresponding_code", "sign_display", "deposit_display", "supplier_display", "division_display"]
    
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
-            return SubagenciesSerializer
-        return SubagenciesListSerializer
+            return ProfilesAndSubagenciensSerializer
+        return ProfilesAndSubagenciensListSerializer

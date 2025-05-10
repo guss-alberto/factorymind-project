@@ -20,7 +20,6 @@ const regions = djangoStore("http://localhost:8000/api/contacts/regions");
 function onRowInserting(e) {
   e.data.register = props.id;
 }
-console.log(props.id)
 
 
 const gridConfig = ref({
