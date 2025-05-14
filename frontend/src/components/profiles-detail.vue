@@ -75,7 +75,7 @@ const gridConfig = ref({
       lookup: {
         dataSource: suppliers,
         valueExpr: "id",
-        displayExpr: e => `${e.last_name} ${e.first_name}`,
+        displayExpr: e => `${e.last_name} ${e.first_name ?? ''}`,
       },
       editorOptions: {
         showClearButton: true,

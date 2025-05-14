@@ -64,7 +64,7 @@ const formConfig = ref([
       editorOptions: {
         dataSource: suppliers,
         valueExpr: "id",
-        displayExpr: item => item ? `${item.last_name} ${item.first_name}` : '',
+        displayExpr: item => item ? `${item.last_name} ${item.first_name ?? ''}` : '',
         searchEnabled: true,
         showClearButton: true,
       },

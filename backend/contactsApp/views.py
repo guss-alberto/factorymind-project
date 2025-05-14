@@ -27,18 +27,23 @@ from .serializer import (
     ProfilesAndSubagenciensListSerializer,
 )
 
+# dynamic search filter for _search used in dropboxes
+def dynamic_search_filter(*search_fields, ordering_field="name"):
+    def filter_method(queryset, name, value):
+        if not value:
+            return queryset
+        q_objects = Q()
+        for field in search_fields:
+            q_objects |= Q(**{f"{field}__icontains": value})
+        return queryset.filter(q_objects).order_by(ordering_field)
+    return filter_method
 
 class RegionFilter(django_filters.FilterSet):
-    _search = django_filters.CharFilter(method='filter_search')
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "code"))
 
     class Meta:
         model = Region
         fields = ["country"]
-
-    def filter_search(self, queryset, name, value):
-        return queryset.filter(
-            Q(name__icontains=value) | Q(code__icontains=value)
-        ).order_by("name")
 
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
@@ -49,15 +54,12 @@ class RegionViewSet(viewsets.ModelViewSet):
 
 
 class CityFilter(django_filters.FilterSet):
-    _search = django_filters.CharFilter(method='filter_search')
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "postcode"))
+
 
     class Meta:
         model = City
         fields = ["region", "region__country", "country"]
-
-    def filter_search(self, queryset, name, value):
-        return queryset.filter( Q(name__icontains=value) | Q(postcode__startswith=value) ).order_by("name")
-
 
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
@@ -66,17 +68,13 @@ class CityViewSet(viewsets.ModelViewSet):
 
 
 class CountryFilter(django_filters.FilterSet):
-    _search = django_filters.CharFilter(method='filter_search')
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "iso_code"))
 
     class Meta:
         model = Country
         fields = ["iso_code"]
 
-    def filter_search(self, queryset, name, value):
-        return queryset.filter(
-            Q(name__icontains=value) | Q(iso_code__icontains=value)
-        ).order_by("name")
-    
+
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
@@ -86,16 +84,12 @@ class CountryViewSet(viewsets.ModelViewSet):
   
 
 class BranchFilter(django_filters.FilterSet):
-    _search = django_filters.CharFilter(method='filter_search')
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "code"))
 
     class Meta:
         model = Branch
         fields = ["code"]
 
-    def filter_search(self, queryset, name, value):
-        return queryset.filter(
-            Q(name__icontains=value) | Q(code__icontains=value)
-        ).order_by("name")
 
 class BranchViewSet(viewsets.ModelViewSet):
     
@@ -185,6 +179,7 @@ class ContactViewSet(viewsets.ModelViewSet):
         return ContactListSerializer
     
 class RegisterFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("last_name", "first_name", ordering_field="last_name"))
     registry_type_display__icontains = django_filters.CharFilter(method='filter_registry_type_display')
 
     class Meta:
@@ -227,6 +222,7 @@ class RegisterViewSet(viewsets.ModelViewSet):
         return Response({'available': not exists})
 
 class DivisionFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "code"))
     supplier_display__icontains = django_filters.CharFilter(method='filter_supplier_display')
    
     class Meta:
@@ -262,8 +258,16 @@ class DivisionViewSet(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
+class SuppliersFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("last_name", "first_name", ordering_field="last_name"))
+    
+    class Meta:
+        model = Register
+        fields = []
+
 class SuppliersViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
+    filterset_class = SuppliersFilter
 
     def get_queryset(self):
         queryset = Register.objects.filter(
@@ -276,9 +280,16 @@ class SuppliersViewSet(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
+class ClientFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("last_name", "first_name", ordering_field="last_name"))
+
+    class Meta:
+        model = Register
+        fields = []
 
 class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
+    filterset_class = ClientFilter
 
     def get_queryset(self):
         queryset = Register.objects.filter(
@@ -290,10 +301,17 @@ class ClientViewSet(viewsets.ModelViewSet):
             queryset = queryset.exclude(id=int(excluded_id))
 
         return queryset.distinct()
+    
+class SignFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "code"))
+    
+    class Meta:
+        model = Sign
+        fields = {"supplier": ["exact"]}
  
 class SignViewSet(viewsets.ModelViewSet):
     serializer_class = SignSerializer
-    filterset_fields = {"supplier": ["exact"]}
+    filterset_class = SignFilter
 
     def get_queryset(self):
         queryset = Sign.objects.all()
@@ -304,9 +322,16 @@ class SignViewSet(viewsets.ModelViewSet):
 
         return queryset.distinct()
 
+class DepositFilter(django_filters.FilterSet):
+    _search = django_filters.CharFilter(method=dynamic_search_filter("name", "code"))
+
+    class Meta:
+        model = Deposit
+        fields = {"supplier": ["exact"]}
+
 class DepositViewSet(viewsets.ModelViewSet):
     serializer_class = DepositSerializer
-    filterset_fields = {"supplier": ["exact"]}
+    filterset_class = DepositFilter
 
     def get_queryset(self):
         queryset = Deposit.objects.all()
