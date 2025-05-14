@@ -48,6 +48,7 @@ class RegionFilter(django_filters.FilterSet):
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = RegionFilter
     search_fields = ["name"]
     ordering_fields = ["code", "name"]
@@ -64,6 +65,7 @@ class CityFilter(django_filters.FilterSet):
 class CityViewSet(viewsets.ModelViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = CityFilter
 
 
@@ -78,6 +80,7 @@ class CountryFilter(django_filters.FilterSet):
 class CountryViewSet(viewsets.ModelViewSet):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = CountryFilter
     ordering_fields = ["code", "name"]
     page_size = 100
@@ -95,6 +98,7 @@ class BranchViewSet(viewsets.ModelViewSet):
     
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = BranchFilter
     ordering_fields = ["code", "name"]
 
@@ -102,6 +106,7 @@ class RegistryTypeViewSet(viewsets.ModelViewSet):
     
     queryset = RegistryType.objects.all()
     serializer_class = RegistryTypeSerializer
+    filter_backends = [DjangoFilterBackend]
     ordering_fields = ["name"]
     
 
@@ -204,6 +209,7 @@ class RegisterViewSet(viewsets.ModelViewSet):
         registry_type_display = F('registry_type__name')  # annotation for display
     )   
     serializer_class = RegisterSerializer
+    filter_backends = [DjangoFilterBackend]
     filterset_class = RegisterFilter
     ordering_fields = ["last_name", "first_name", "email", "phone", "phone_ext", "mobile", "vat_number", "registry_type_display"]
 
@@ -234,6 +240,7 @@ class DivisionFilter(django_filters.FilterSet):
 
 class DivisionViewSet(viewsets.ModelViewSet):
     filterset_class = DivisionFilter
+    filter_backends = [DjangoFilterBackend]
     filter_fields = ["supplier_display"]
     ordering_fields = ["name", "supplier_display"]
 
@@ -268,6 +275,7 @@ class SuppliersFilter(django_filters.FilterSet):
 class SuppliersViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     filterset_class = SuppliersFilter
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = Register.objects.filter(
@@ -290,6 +298,7 @@ class ClientFilter(django_filters.FilterSet):
 class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = RegisterSerializer
     filterset_class = ClientFilter
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = Register.objects.filter(
@@ -312,6 +321,7 @@ class SignFilter(django_filters.FilterSet):
 class SignViewSet(viewsets.ModelViewSet):
     serializer_class = SignSerializer
     filterset_class = SignFilter
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = Sign.objects.all()
@@ -332,6 +342,7 @@ class DepositFilter(django_filters.FilterSet):
 class DepositViewSet(viewsets.ModelViewSet):
     serializer_class = DepositSerializer
     filterset_class = DepositFilter
+    filter_backends = [DjangoFilterBackend]
 
     def get_queryset(self):
         queryset = Deposit.objects.all()
@@ -409,6 +420,7 @@ class ProfilesAndSubagenciesViewSet(viewsets.ModelViewSet):
         ),
     )
     filterset_class = ProfilesAndSubagenciesFilter
+    filter_backends = [DjangoFilterBackend]
     filter_fields = ["client_display", "sign_display", "corresponding_code", "deposit_display", "supplier_display", "division_display"]
     ordering_fields = ["client_display", "corresponding_code", "sign_display", "deposit_display", "supplier_display", "division_display"]
    

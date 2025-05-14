@@ -125,7 +125,7 @@ class Division(NameCodeEntity):
         Register, 
         on_delete=models.CASCADE, 
         related_name="client_division",
-            limit_choices_to={  #AGGIUNTO QUESTO
+            limit_choices_to={
             "registry_type__name__in": ["Cliente", "Cliente/Fornitore"]
         }
     )

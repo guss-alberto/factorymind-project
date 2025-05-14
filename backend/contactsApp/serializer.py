@@ -27,7 +27,7 @@ class BranchSerializer(serializers.ModelSerializer):
         model = Branch
 
 
-# visualizzare
+# view
 class ContactListSerializer(serializers.ModelSerializer):
     branch = serializers.PrimaryKeyRelatedField(read_only=True)
     branch__name = serializers.CharField(read_only=True)
@@ -75,7 +75,7 @@ class ContactListSerializer(serializers.ModelSerializer):
         model = Contact
 
 
-# inserimento
+# add
 class ContactSerializer(serializers.ModelSerializer):
     register = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     branch = serializers.PrimaryKeyRelatedField(queryset=Branch.objects.all())
@@ -114,7 +114,7 @@ class RegistryTypeSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
         model = RegistryType
 
-#inserimento
+#view
 class DivisionSerializer(serializers.ModelSerializer):
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
 
@@ -122,7 +122,7 @@ class DivisionSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "client", "supplier"]
         model = Division
 
-#visualizzare
+#add
 class DivisionListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
     supplier = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -147,7 +147,7 @@ class DepositSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "supplier"]
         model = Deposit
  
-#inserimento
+#view
 class ProfilesAndSubagenciensSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
     supplier = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
@@ -165,7 +165,7 @@ class ProfilesAndSubagenciensSerializer(serializers.ModelSerializer):
                   ]
         model = ProfilesAndSubagencies
 
-#visualizzare
+#add
 class ProfilesAndSubagenciensListSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)
     client__first_name = serializers.CharField(read_only=True)
