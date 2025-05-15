@@ -9,11 +9,11 @@ from contactsApp.models import Country, City, Region
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # costrusce il percorso del file
+        # path creation
         base_path = Path(settings.BASE_DIR) / "contactsApp/data"
 
         with transaction.atomic():
-            with (base_path / "worldcities.csv").open("r") as csvfile:
+            with (base_path / "worldcities.csv").open("r", encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
 
                 for row in reader:
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                     
                 country, _ = Country.objects.get_or_create(
                     iso_code="ITA",
-                    name="Italia",
+                    name="Italy",
                 )
 
             with (base_path / "zipcodes.it.csv").open("r") as csvfile:
