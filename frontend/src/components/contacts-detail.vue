@@ -79,6 +79,8 @@ const gridConfig = ref({
 
   onSaving(e) {
     e.changes.forEach(change => {
+      if (!change.data) return;
+
       const isRegionDisabled = change.data.disable_region;
       
       if (isRegionDisabled && !('region' in change.data)) {

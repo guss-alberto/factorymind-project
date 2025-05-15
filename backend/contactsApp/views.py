@@ -67,6 +67,7 @@ class CityViewSet(viewsets.ModelViewSet):
     serializer_class = CitySerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = CityFilter
+    ordering_fields = ["code", "name"]
 
 
 class CountryFilter(django_filters.FilterSet):
@@ -176,7 +177,7 @@ class ContactViewSet(viewsets.ModelViewSet):
     filterset_backend = [DjangoFilterBackend]
     # annotated filtered fields
     filter_fields = ['branch_display', 'country_display', 'city_display', 'city__name', 'region_display']
-    ordering_fields = ["name", "email", "phone", "phone_ext", "branch_display", "country_display", "region_display"]
+    ordering_fields = ["name", "email", "phone", "phone_ext", "branch_display", "country_display", "region_display", "city_display", "address"]
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "retrieve", "partial_update"]:
@@ -209,7 +210,6 @@ class RegisterViewSet(viewsets.ModelViewSet):
         registry_type_display = F('registry_type__name')  # annotation for display
     )   
     serializer_class = RegisterSerializer
-    filter_backends = [DjangoFilterBackend]
     filterset_class = RegisterFilter
     ordering_fields = ["last_name", "first_name", "email", "phone", "phone_ext", "mobile", "vat_number", "registry_type_display"]
 
@@ -420,7 +420,6 @@ class ProfilesAndSubagenciesViewSet(viewsets.ModelViewSet):
         ),
     )
     filterset_class = ProfilesAndSubagenciesFilter
-    filter_backends = [DjangoFilterBackend]
     filter_fields = ["client_display", "sign_display", "corresponding_code", "deposit_display", "supplier_display", "division_display"]
     ordering_fields = ["client_display", "corresponding_code", "sign_display", "deposit_display", "supplier_display", "division_display"]
    
